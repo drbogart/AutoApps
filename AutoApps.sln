@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.202
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoApps", "AutoApps.csproj", "{F7D4D81D-FD89-4A5E-A724-77425C301915}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "MyLibraries", "..\MyLibraries\MyLibraries.shproj", "{E1B2C722-F448-45C5-8525-E1ED3DFB3D02}"
+EndProject
+Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\MyLibraries\MyLibraries.projitems*{e1b2c722-f448-45c5-8525-e1ed3dfb3d02}*SharedItemsImports = 13
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F7D4D81D-FD89-4A5E-A724-77425C301915}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7D4D81D-FD89-4A5E-A724-77425C301915}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7D4D81D-FD89-4A5E-A724-77425C301915}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7D4D81D-FD89-4A5E-A724-77425C301915}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {88DB17C4-4325-4ADA-BF08-86F9A33C4DDC}
+	EndGlobalSection
+EndGlobal

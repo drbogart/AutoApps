@@ -1,0 +1,80 @@
+﻿body {
+    background-color: #efefef;
+    padding-top: 100px;
+}
+
+.container {
+    background-color: white;
+    padding-bottom: 1em;
+}
+
+h1 {
+    background-color: #cccccc;
+    padding: .25em;
+}
+
+.projections th, .quality th {
+    text-align: right;
+    padding: .25em 1em .25em 0em;
+    width: 60%;
+}
+
+.target th, .salegp th {
+    width: 100%;
+    padding: 0;
+    text-align: center;
+    font-size: 2em;
+    background-color: #99ccFF;
+    padding-bottom: .25em;
+}
+
+tr.target, tr.salegp {
+    border-bottom: 0px;
+}
+
+.projections th p, .quality th p {
+    font-weight: lighter;
+    font-size: .45em;
+    margin: 0;
+    padding: 0;
+}
+
+.projections td, .quality td {
+    padding: .25em 1em .25em 0em;
+}
+
+.projections table td:last-child, .quality table td:last-child {
+    padding: .25em 0em .25em 0em;
+}
+
+.projections tr, .quality tr {
+    border-bottom: 1px dashed black;
+}
+
+.projections table tr:last-child, .quality table tr:last-child {
+    border-bottom: 2px solid black;
+}
+
+.projections table tr:nth-child(4n) {
+    border-bottom: 2px solid black;
+}
+
+.projections tr.under {
+    background-color: #fcc;
+}
+
+.projections tr.over {
+    background-color: #cfc;
+}
+
+.projections table, .quality table {
+    width: 100%;
+    border-left: 1px solid #99ccFF;
+    border-right: 1px solid #99ccFF;
+    border-top: 2px solid black;
+}
+
+.projections h4, .quality h4 {
+    text-align: center;
+    margin-bottom: 1px;
+}
