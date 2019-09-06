@@ -22,6 +22,7 @@ namespace bogart_wireless.Controllers
             Datascape.generalSettings = generalSettings.Value;
             SalesData.emailConfiguration = configuration.Get("ReportFiles");
             SalesData.dbSettings = dbsettings.Value;
+            Payroll.generalSettings = generalSettings.Value;
         }
 
         public IActionResult Index()

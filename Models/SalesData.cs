@@ -578,6 +578,33 @@ namespace bogart_wireless.Models
         }
 
         /* execute a query on productDetails that will return a single long value */
+        public String stringValueQuery(string queryString)
+        {
+
+            String result = "";
+
+
+            // Execute the query  
+            SqlCommand command = new SqlCommand(queryString, connection);
+            command.CommandTimeout = 600;
+            SqlDataReader reader = command.ExecuteReader();
+            Console.WriteLine(queryString);
+
+            reader.Read();
+
+            // will only be one row.  MAX can't return more
+            if (reader.HasRows && !reader.IsDBNull(0))
+            {
+                result = reader.GetString(0);
+            }
+
+
+            // close reader 
+            reader.Close();
+            return result;
+        }
+
+        /* execute a query on productDetails that will return a single long value */
         public long longValueProductDetailsQuery(string queryString)
         {
 
