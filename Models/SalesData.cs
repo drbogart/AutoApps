@@ -277,7 +277,7 @@ namespace bogart_wireless.Models
 
             // define the query string
             queryString = "Select sum(GrossProfit) from bogart_2.productdetails where SoldOn Between '" + startDate + "' AND '" + endDate + "'";
-            queryString = "Select sum(GrossProfit) from #ProductDetails";
+            queryString = "Select sum(GrossProfit) from #ProductDetails where SoldOn Between '" + startDate + "' AND '" + endDate + "'";
 
             // Execute the query
             SqlCommand command = new SqlCommand(queryString, connection);
@@ -306,7 +306,7 @@ namespace bogart_wireless.Models
                            "AND CONVERT(date, SoldOn) <> SoldOn";
             queryString = "Select sum(Qty) from #ProductDetails where " +
                "ProductSKU IN(Select ProductSKU from bogart_2.productSKUS where newLine = 1) " +
-               "AND CONVERT(date, SoldOn) <> SoldOn";
+               "AND CONVERT(date, SoldOn) <> SoldOn AND SoldOn Between '" + startDate + "' AND '" + endDate + "'";
 
             // Execute the query  
             SqlCommand command = new SqlCommand(queryString, connection);
@@ -330,11 +330,11 @@ namespace bogart_wireless.Models
             decimal result;
 
             // define the query string
-            queryString = "Select sum(Qty) from bogart_2.productdetails  where SoldOn Between '" + startDate + "' AND '" + endDate + "'" +
+            queryString = "Select sum(Qty) from bogart_2.productdetails  where SoldOn Between '" + startDate + "' AND '" + endDate + "' " +
                            "AND ProductSKU IN(Select ProductSKU from bogart_2.productSKUS where Upgrade = 1) " +
                            "AND CONVERT(date, SoldOn) <> SoldOn";
-            queryString = "Select sum(Qty) from #ProductDetails  where " +
-               "ProductSKU IN(Select ProductSKU from bogart_2.productSKUS where Upgrade = 1) " +
+            queryString = "Select sum(Qty) from #ProductDetails where SoldOn Between '" + startDate + "' AND '" + endDate + "' " +
+               "AND ProductSKU IN(Select ProductSKU from bogart_2.productSKUS where Upgrade = 1) " +
                "AND CONVERT(date, SoldOn) <> SoldOn";
 
             // Execute the query  
@@ -359,8 +359,8 @@ namespace bogart_wireless.Models
             int result;
 
             // define the query string
-            queryString = "Select sum(Qty) from #ProductDetails  where " +
-               "ProductSKU IN(Select ProductSKU from bogart_2.productSKUS where VoiceLine = 1) " +
+            queryString = "Select sum(Qty) from #ProductDetails where SoldOn Between '" + startDate + "' AND '" + endDate + "' " +
+               "AND ProductSKU IN(Select ProductSKU from bogart_2.productSKUS where VoiceLine = 1) " +
                "AND CONVERT(date, SoldOn) <> SoldOn";
 
             // Execute the query  
@@ -384,8 +384,8 @@ namespace bogart_wireless.Models
             decimal result;
 
             // define the query string
-            queryString = "Select sum(Qty) from #ProductDetails  where " +
-               "ProductSKU IN(Select ProductSKU from bogart_2.productSKUS where NewStrategicGrowth = 1) " +
+            queryString = "Select sum(Qty) from #ProductDetails where SoldOn Between '" + startDate + "' AND '" + endDate + "' " +
+               "AND ProductSKU IN(Select ProductSKU from bogart_2.productSKUS where NewStrategicGrowth = 1) " +
                "AND CONVERT(date, SoldOn) <> SoldOn";
 
             // Execute the query  
@@ -432,7 +432,7 @@ namespace bogart_wireless.Models
             decimal result;
 
             // define the query string
-            queryString = "Select sum(Qty) from bogart_2.productdetails  where InvoicedAt = '" + store + "' AND SoldOn Between '" + startDate + "' AND '" + endDate + "'" +
+            queryString = "Select sum(Qty) from bogart_2.productdetails  where InvoicedAt = '" + store + "' AND SoldOn Between '" + startDate + "' AND '" + endDate + "' " +
                            "AND ProductSKU IN(Select ProductSKU from bogart_2.productSKUS where newLine = 1) " +
                            "AND CONVERT(date, SoldOn) <> SoldOn";
 
@@ -465,7 +465,7 @@ namespace bogart_wireless.Models
             decimal result;
 
             // define the query string
-            queryString = "Select sum(Qty) from #ProductDetails  where InvoicedAt = '" + store + "' AND SoldOn Between '" + startDate + "' AND '" + endDate + "'" +
+            queryString = "Select sum(Qty) from #ProductDetails where InvoicedAt = '" + store + "' AND SoldOn Between '" + startDate + "' AND '" + endDate + "' " +
                            "AND ProductSKU IN(Select ProductSKU from bogart_2.productSKUS where Upgrade = 1) " +
                            "AND CONVERT(date, SoldOn) <> SoldOn";
 
@@ -498,7 +498,7 @@ namespace bogart_wireless.Models
             int result;
 
             // define the query string
-            queryString = "Select sum(Qty) from #ProductDetails  where InvoicedAt = '" + store + "' AND SoldOn Between '" + startDate + "' AND '" + endDate + "'" +
+            queryString = "Select sum(Qty) from #ProductDetails where InvoicedAt = '" + store + "' AND SoldOn Between '" + startDate + "' AND '" + endDate + "' " +
                            "AND ProductSKU IN(Select ProductSKU from bogart_2.productSKUS where VoiceLine = 1) " +
                            "AND CONVERT(date, SoldOn) <> SoldOn";
 
@@ -532,7 +532,7 @@ namespace bogart_wireless.Models
             decimal result;
 
             // define the query string
-            queryString = "Select sum(Qty) from #ProductDetails  where InvoicedAt = '" + store + "' AND SoldOn Between '" + startDate + "' AND '" + endDate + "'" +
+            queryString = "Select sum(Qty) from #ProductDetails where InvoicedAt = '" + store + "' AND SoldOn Between '" + startDate + "' AND '" + endDate + "' " +
                            "AND ProductSKU IN(Select ProductSKU from bogart_2.productSKUS where NewStrategicGrowth = 1) " +
                            "AND CONVERT(date, SoldOn) <> SoldOn";
 
@@ -603,7 +603,6 @@ namespace bogart_wireless.Models
             reader.Close();
             return result;
         }
-
         /* execute a query on productDetails that will return a single long value */
         public long longValueProductDetailsQuery(string queryString)
         {
@@ -809,6 +808,7 @@ namespace bogart_wireless.Models
 
             // pull data into Temp Table
             string queryString = "Select * Into #ProductDetails from bogart_2.productdetails where SoldOn BETWEEN '" + startDate + "' AND '" + endDate + "'";
+            queryString = "Select * Into #ProductDetails from bogart_2.productdetails where SoldOn BETWEEN '" + startDate + "' AND '" + endDate + "' or SoldOn BETWEEN '" + lyStartString + "' AND '" + lyEndString + "'";
             executeNonQuery(queryString);
 
 
@@ -851,6 +851,7 @@ namespace bogart_wireless.Models
 
             // get ins GP
             queryString = "Select sum(GrossProfit) from #ProductDetails where GPCategory = 'PROT' and GrossProfit > 0";
+            queryString = "Select sum(GrossProfit) from #ProductDetails where GPCategory = 'PROT'";
             QualityData[0].InsGP = Math.Round(decimalValueProductDetailsQuery(queryString) / QualityData[0].VoiceLines, 2);
 
             // get ins. count
@@ -901,11 +902,12 @@ namespace bogart_wireless.Models
 
             // calculate Ready/Go rate
 
-            queryString = "SELECT SUM(Qty) as ReadyGoCount FROM #PRoductDetails p, bogart_2.productskus s " +
+            queryString = "SELECT SUM(Qty) as ReadyGoCount FROM #ProductDetails p, bogart_2.productskus s " +
                     "WHERE p.ProductSKU = s.ProductSKU " +
                     "AND s.ReadyGO = 1";
             decimal totalReadyGO = decimalValueProductDetailsQuery(queryString);
-            QualityData[0].ReadyGoTakeRate = Math.Round(totalReadyGO / QualityData[0].VoiceLines, 2);
+            QualityData[0].ReadyGoTakeRate = Math.Round(totalReadyGO * 100/ QualityData[0].VoiceLines, 2);
+            
 
             // calculate Ready/Go GP per sale
 
@@ -913,7 +915,7 @@ namespace bogart_wireless.Models
                     "WHERE p.ProductSKU = s.ProductSKU " +
                     "AND s.ReadyGO = 1";
             decimal totalReadyGOGP = decimalValueProductDetailsQuery(queryString);
-            QualityData[0].ReadyGoGP = Math.Round(totalReadyGOGP * 100 / QualityData[0].VoiceLines, 2);
+            QualityData[0].ReadyGoGP = Math.Round(totalReadyGOGP / QualityData[0].VoiceLines, 2);
         }
 
         public void calculateStoreQuality(DateTime startDate, string startString, DateTime endDate, string endString, string lyStartString, string lyEndString, int daysInMonth)
@@ -932,7 +934,7 @@ namespace bogart_wireless.Models
                 QualityData[storeNum].NewLines = Math.Round(getStoreNewLines(startString, endString, StoreList[storeNum].dbName), 0);
 
                 // get HUM count
-                queryString = "Select sum(Qty) from bogart_2.productdetails  where InvoicedAt = '" + StoreList[storeNum].dbName + "' AND SoldOn Between '" + startDate + "' AND '" + endDate + "'" +
+                queryString = "Select sum(Qty) from #ProductDetails  where InvoicedAt = '" + StoreList[storeNum].dbName + "' AND SoldOn Between '" + startDate + "' AND '" + endDate + "'" +
                "AND ProductSKU IN(Select ProductSKU from bogart_2.productSKUS where HUM = 1) " +
                "AND CONVERT(date, SoldOn) <> SoldOn";
                 QualityData[storeNum].HUMCount = (int)decimalValueProductDetailsQuery(queryString);
@@ -954,6 +956,7 @@ namespace bogart_wireless.Models
 
                 // get ins. count
                 queryString = "Select sum(Qty) from #ProductDetails where InvoicedAt = '" + StoreList[storeNum].dbName + "' and GPCategory = 'PROT' and GrossProfit > 0";
+                queryString = "Select sum(Qty) from #ProductDetails where InvoicedAt = '" + StoreList[storeNum].dbName + "' and GPCategory = 'PROT'";
                 decimal insCount = decimalValueProductDetailsQuery(queryString);
                 QualityData[storeNum].InsRate = Math.Round(insCount * 100 / QualityData[storeNum].VoiceLines, 2);
 
@@ -1073,6 +1076,7 @@ namespace bogart_wireless.Models
 
                 // get ins GP
                 queryString = "Select sum(GrossProfit) from #ProductDetails where SoldBy = '" + activeReps[repNum] + "' and GPCategory = 'PROT' and GrossProfit > 0";
+                queryString = "Select sum(GrossProfit) from #ProductDetails where SoldBy = '" + activeReps[repNum] + "' and GPCategory = 'PROT'";
                 if (RepQualityData[repNum].VoiceLines > 0)
                 {
                     RepQualityData[repNum].InsGP = Math.Round(decimalValueProductDetailsQuery(queryString) / RepQualityData[repNum].VoiceLines, 2);
@@ -1181,7 +1185,7 @@ namespace bogart_wireless.Models
                 if (endDate.Subtract(startDate).TotalDays > 21)
                 {
                     Payroll payroll = new Payroll();
-                    CommissionRates rateSet = payroll.calcuateCommissionRate(RepQualityData[repNum], endDate, this);
+                    CommissionRates rateSet = payroll.calculateCommissionRate(RepQualityData[repNum], endDate, this);
                     RepQualityData[repNum].CommissionRate = Math.Round(rateSet.effectiveRate, 2);
                 }
                 else
@@ -1469,8 +1473,10 @@ namespace bogart_wireless.Models
 
                             // send a "SUCCESS" email
                             EmailService emailService = new EmailService(SalesData.emailConfiguration);
-                            emailService.QuickSend("Re: " + email.Subject, "Successfully Processed", "dave.bogart@wireless-zone.com", "Dave Bogart");
-
+                            if (email.FromAddresses.Count > 0)
+                            {
+                                emailService.QuickSend("Re: " + email.Subject, "Successfully Processed", email.FromAddresses[0].Address, email.FromAddresses[0].Name);
+                            }
 
 
                         }
@@ -1479,7 +1485,7 @@ namespace bogart_wireless.Models
                             Excel excel = new Excel();
                             excel.processWeeklySummary(fileName, email.Subject);
                             EmailService emailService = new EmailService(SalesData.emailConfiguration);
-                            emailService.QuickSend("Re: " + email.Subject, "Successfully Processed", "dave.bogart@wireless-zone.com", "Dave Bogart");
+                            emailService.QuickSend("Re: " + email.Subject, "Successfully Processed", "noreply@bogart-wireless.net", SalesData.emailConfiguration.FromName);
 
                         }
                     }
@@ -1664,7 +1670,7 @@ namespace bogart_wireless.Models
                             "Order by Category, Minimum, AppliesTo";
 
                     // get the company qualifiers for which there is not an overriding individual qualifier
-                    queryString = "SELECT Category, Minimum, Rate, AppliesTo FROM bogart_2.commissionQualifiers cq " +
+                    queryString = "SELECT Category, Minimum, Rate, AppliesTo, RotationMinimum FROM bogart_2.commissionQualifiers cq " +
                                 "WHERE AppliesTo = 'COMPANY' " +
                                 "AND ( startDate <= '" + sunday.ToString("d") + "' AND ( endDate >= '" + calcDate.ToString("d") + "' or endDate is null))  AND Category <> 'LAST_CALC_DATE' " +
                                 "AND NOT EXISTS(SELECT * " +
@@ -1684,6 +1690,7 @@ namespace bogart_wireless.Models
                         qualifier.minimum = reader.GetDecimal(1);
                         qualifier.rate = reader.GetDecimal(2);
                         qualifier.appliesTo = reader.GetString(3);
+                        qualifier.rotationMinumum = reader.GetDecimal(4);
 
                         // add qualifiers to other commission data
                         rateSet.qualifiers.Add(qualifier);
@@ -1712,7 +1719,7 @@ namespace bogart_wireless.Models
                     foreach (String qualifierCategory in individualQualifiers)
                     {
 
-                        queryString = "Select Category, minimum, rate, AppliesTo from bogart_2.commissionQualifiers " +
+                        queryString = "Select Category, minimum, rate, AppliesTo, RotationMinimum from bogart_2.commissionQualifiers " +
                                 "where AppliesTo = '" + repName + "' " +
                                 "AND Category =  '" + qualifierCategory + "' " +
                                 "AND startDate = (Select  MAX(StartDate) FROM bogart_2.commissionQualifiers " +
@@ -1730,6 +1737,7 @@ namespace bogart_wireless.Models
                             qualifier.minimum = reader.GetDecimal(1);
                             qualifier.rate = reader.GetDecimal(2);
                             qualifier.appliesTo = reader.GetString(3);
+                            qualifier.rotationMinumum = reader.GetDecimal(4);
 
                             // add qualifiers to other commission data
                             rateSet.qualifiers.Add(qualifier);

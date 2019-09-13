@@ -50,7 +50,7 @@ namespace bogart_wireless.Controllers
         public IActionResult Commissions(SalesData salesData)
         {
             Payroll payroll = new Payroll();
-            payroll.calculateWeeklyCommission(true);
+            payroll.calculateWeeklyCommission(false);
             ViewBag.Message = "Processed commissions";
             return View("Done");
 
