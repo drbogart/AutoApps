@@ -1087,8 +1087,9 @@ namespace bogart_wireless.Models
                 }
 
                 // get ins. count
-                queryString = "Select sum(Qty) from #ProductDetails where SoldBy = '" + activeReps[repNum] + "' and GPCategory = 'PROT' and GrossProfit > 0";
-                decimal insCount = decimalValueProductDetailsQuery(queryString);
+                queryString = "Select sum(Qty) from #ProductDetails where SoldBy = '" + activeReps[repNum] + "' and GPCategory = 'PROT' and ABS(GrossProfit) > 1";
+                //queryString = "Select sum(TMPCount) from #ProductDetails where SoldBy = '" + activeReps[repNum] + "'";
+                decimal insCount = longValueProductDetailsQuery(queryString);
                 if (RepQualityData[repNum].VoiceLines > 0)
                 {
                     RepQualityData[repNum].InsRate = Math.Round(insCount * 100 / RepQualityData[repNum].VoiceLines, 2);
@@ -1507,8 +1508,10 @@ namespace bogart_wireless.Models
             queryString = "UPDATE bogart_2.productdetails SET GPCategory = 'ACC' WHERE GPCategory IS NULL AND Category LIKE '>> Accessory%'";
             executeNonQuery(queryString);
 
+            queryString = "UPDATE bogart_2.productdetails SET GPCategory = 'ACC' WHERE GPCategory IS NULL AND Category LIKE '>> Integrated Solutions >> Dropship >> Dropship Shipping%'";
+            executeNonQuery(queryString);
 
-            queryString = "UPDATE bogart_2.productdetails SET GPCategory = 'ACC' WHERE GPCategory IS NULL AND Category LIKE '>> Integrated Solutions%'";
+            queryString = "UPDATE bogart_2.productdetails SET GPCategory = 'TRADEIN' WHERE GPCategory IS NULL AND Category LIKE '>> Integrated Solutions >> VZW Trade%'";
             executeNonQuery(queryString);
 
             queryString = "UPDATE bogart_2.productdetails SET GPCategory = 'PROT' WHERE GPCategory IS NULL  AND Category LIKE('>> Activations >> Verizon Wireless >> Features%')";
@@ -1559,10 +1562,12 @@ namespace bogart_wireless.Models
             // assign values to TMPCount field for single line TMP
             String queryString = "Update bogart_2.productdetails set TMPCount = Qty where TMPCount is null and ProductDetailLineID > " + max_rec_id +
                    " and ProductSKU in (Select ProductSKU from bogart_2.productskus where TMP = 1)";
+             queryString = "Update bogart_2.productdetails set TMPCount = Qty where TMPCount is null and ProductDetailLineID > " + max_rec_id +
+                 " and GPCategory = 'PROT' and ABS(GrossProfit) > 1";
             executeNonQuery(queryString);
 
             // assign values to TMPCount field for multi line TMP
-            queryString = "Select ProductDetailLineID, InvoiceNo, ProductSKU, Qty from bogart_2.productdetails where ProductDetailLineID > " + max_rec_id + " and TMPCount is null " +
+            queryString = "Select ProductDetailLineID, InvoiceNo, ProductSKU, Qty from bogart_2.productdetails where ProductDetailLineID > " + max_rec_id +
                   " and ProductSKU in (Select ProductSKU from bogart_2.productskus where TMPMulti = 1)";
 
             // Execute the query  
