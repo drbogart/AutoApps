@@ -4,11 +4,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Data;
+using System.Web;
 using System.Globalization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Data.SqlClient;
 using bogart_wireless.Libraries;
-
+using System.ComponentModel.DataAnnotations;
 
 namespace bogart_wireless.Models
 {
@@ -65,17 +66,67 @@ namespace bogart_wireless.Models
         public static IEmailConfiguration emailConfiguration; // for email
         public static DatabaseConnectionSettings dbSettings; // for database connection
 
+        // track whether user is an admin
+        public String userLevel;
+
+        private readonly List<Rep> _currentReps = new List<Rep>();
+
+        public DateTime vacationStartDate { get; set; } = DateTime.Now.Date;
+
+        [Range(0, 100)]
+        public Int16 vacationMonths { get; set; } = 25;
+        public int vacationRep { get; set; } = -1;
+        // this is the list of current and future qualifiers currently active for rep selected in VacationsAndGoals
+        public List<Qualifier> QualifierList = new List<Qualifier>();
 
         // data that can be accessed outside 
+
+
+        public void getRepQualifiers()
+        {
+            String repName = _currentReps[vacationRep].Name;
+            string selectSQL = "Select Category, StartDate, EndDate, Minimum, Rate, RotationMinimum from bogart_2.commissionQualifiers  " +
+                "where AppliesTo = '" + repName + "' " +
+                "AND startDate <= '" + DateTime.Now.ToShortDateString() + "' " +
+                "AND (endDate > '" + DateTime.Now.ToShortDateString() + "' or endDate is NULL) " +
+                "AND Category = 'NEW_LINES'";
+
+
+            // Execute the query
+            SqlCommand command = new SqlCommand(selectSQL, connection);
+            command.CommandTimeout = 600;
+            SqlDataReader reader = command.ExecuteReader();
+
+            // get the return data
+            while (reader.Read())
+            {
+                Qualifier q = new Qualifier();
+                q.category = reader.GetString(0);
+                q.startDate = reader.GetDateTime(1);
+                q.endDate = reader.GetDateTime(2);
+                q.minimum = reader.GetDecimal(3);
+                q.rate = reader.GetDecimal(4);
+                q.rotationMinumum = reader.GetDecimal(5);
+                QualifierList.Add(q);
+            }
+
+            // close reader 
+            reader.Close();
+        }
+
         public IEnumerable<SelectListItem> MonthList
         {
             get { return new SelectList(_months); }
         }
 
+        public IEnumerable<SelectListItem> CurrentRepItems
+        {
+
+            get { return new SelectList(_currentReps, "Id", "Name"); }
+        }
 
         public SalesData()
         {
-
 
 
             /* establish connection parameters for the specified environment */
@@ -108,6 +159,7 @@ namespace bogart_wireless.Models
             // load promos
             loadPromos();
         }
+
 
         public int getSelectedMonth()
         {
@@ -176,6 +228,39 @@ namespace bogart_wireless.Models
 
             // close reader 
             reader.Close();
+
+        }
+
+        public void getCurrentReps()
+        {
+            int repNum = 0;
+            // delete anything currently in the list
+            _currentReps.Clear();
+
+            String queryString = "SELECT UserName FROM bogart_2.users WHERE Active = 1 and SalesRepEffectiveDate < '" + DateTime.Now.ToShortDateString() + "'";
+
+            // Execute the query
+            SqlCommand command = new SqlCommand(queryString, connection);
+            command.CommandTimeout = 600;
+            SqlDataReader reader = command.ExecuteReader();
+
+            while (reader.Read())
+            {
+                Rep rep = new Rep();
+                rep.Id = repNum;
+                rep.Name = (reader.GetString(0));
+                _currentReps.Add(rep);
+                repNum++;
+            }
+
+            // close reader 
+            reader.Close();
+
+        }
+        public string getCurrentRepName(int repNum)
+        {
+
+            return _currentReps[repNum].Name;
 
         }
 
@@ -855,8 +940,9 @@ namespace bogart_wireless.Models
             QualityData[0].InsGP = Math.Round(decimalValueProductDetailsQuery(queryString) / QualityData[0].VoiceLines, 2);
 
             // get ins. count
-            queryString = "Select sum(Qty) from #ProductDetails where GPCategory = 'PROT' and GrossProfit > 0";
-            decimal insCount = decimalValueProductDetailsQuery(queryString);
+            queryString = "Select sum(Qty) from #ProductDetails where GPCategory = 'PROT' and abs(GrossProfit) > 1";
+            queryString = "Select sum(TMPCount) from #ProductDetails where GPCategory = 'PROT' and SoldOn <> Convert(DATE, SoldOn)";
+            decimal insCount = longValueProductDetailsQuery(queryString);
             QualityData[0].InsRate = Math.Round(insCount * 100 / QualityData[0].VoiceLines, 2);
 
             // get upgrade count
@@ -906,8 +992,8 @@ namespace bogart_wireless.Models
                     "WHERE p.ProductSKU = s.ProductSKU " +
                     "AND s.ReadyGO = 1";
             decimal totalReadyGO = decimalValueProductDetailsQuery(queryString);
-            QualityData[0].ReadyGoTakeRate = Math.Round(totalReadyGO * 100/ QualityData[0].VoiceLines, 2);
-            
+            QualityData[0].ReadyGoTakeRate = Math.Round(totalReadyGO * 100 / QualityData[0].VoiceLines, 2);
+
 
             // calculate Ready/Go GP per sale
 
@@ -952,12 +1038,14 @@ namespace bogart_wireless.Models
 
                 // get ins GP
                 queryString = "Select sum(GrossProfit) from #ProductDetails where InvoicedAt = '" + StoreList[storeNum].dbName + "' and GPCategory = 'PROT' and GrossProfit > 0";
+                queryString = "Select sum(GrossProfit) from #ProductDetails where InvoicedAt = '" + StoreList[storeNum].dbName + "' AND GPCategory = 'PROT'";
                 QualityData[storeNum].InsGP = Math.Round(decimalValueProductDetailsQuery(queryString) / QualityData[storeNum].VoiceLines, 2);
 
                 // get ins. count
                 queryString = "Select sum(Qty) from #ProductDetails where InvoicedAt = '" + StoreList[storeNum].dbName + "' and GPCategory = 'PROT' and GrossProfit > 0";
                 queryString = "Select sum(Qty) from #ProductDetails where InvoicedAt = '" + StoreList[storeNum].dbName + "' and GPCategory = 'PROT'";
-                decimal insCount = decimalValueProductDetailsQuery(queryString);
+                queryString = "Select sum(TMPCount) from #ProductDetails where InvoicedAt = '" + StoreList[storeNum].dbName + "' and GPCategory = 'PROT' and SoldOn <> Convert(DATE, SoldOn)";
+                decimal insCount = longValueProductDetailsQuery(queryString);
                 QualityData[storeNum].InsRate = Math.Round(insCount * 100 / QualityData[storeNum].VoiceLines, 2);
 
                 // get upgrade count
@@ -1088,7 +1176,7 @@ namespace bogart_wireless.Models
 
                 // get ins. count
                 queryString = "Select sum(Qty) from #ProductDetails where SoldBy = '" + activeReps[repNum] + "' and GPCategory = 'PROT' and ABS(GrossProfit) > 1";
-                //queryString = "Select sum(TMPCount) from #ProductDetails where SoldBy = '" + activeReps[repNum] + "'";
+                queryString = "Select sum(TMPCount) from #ProductDetails where SoldBy = '" + activeReps[repNum] + "' and SoldOn <> Convert(DATE, SoldOn)";
                 decimal insCount = longValueProductDetailsQuery(queryString);
                 if (RepQualityData[repNum].VoiceLines > 0)
                 {
@@ -1225,11 +1313,11 @@ namespace bogart_wireless.Models
             executeNonQuery(queryString);
 
             // sort Rep Quality array by GP per sale
-            
+
             Array.Sort(RepQualityData, delegate (Quality user2, Quality user1) {
                 return user1.GPPerSale.CompareTo(user2.GPPerSale);
             });
-            
+
         }
 
 
@@ -1508,6 +1596,7 @@ namespace bogart_wireless.Models
             queryString = "UPDATE bogart_2.productdetails SET GPCategory = 'ACC' WHERE GPCategory IS NULL AND Category LIKE '>> Accessory%'";
             executeNonQuery(queryString);
 
+
             queryString = "UPDATE bogart_2.productdetails SET GPCategory = 'ACC' WHERE GPCategory IS NULL AND Category LIKE '>> Integrated Solutions >> Dropship >> Dropship Shipping%'";
             executeNonQuery(queryString);
 
@@ -1562,8 +1651,8 @@ namespace bogart_wireless.Models
             // assign values to TMPCount field for single line TMP
             String queryString = "Update bogart_2.productdetails set TMPCount = Qty where TMPCount is null and ProductDetailLineID > " + max_rec_id +
                    " and ProductSKU in (Select ProductSKU from bogart_2.productskus where TMP = 1)";
-             queryString = "Update bogart_2.productdetails set TMPCount = Qty where TMPCount is null and ProductDetailLineID > " + max_rec_id +
-                 " and GPCategory = 'PROT' and ABS(GrossProfit) > 1";
+            queryString = "Update bogart_2.productdetails set TMPCount = Qty where TMPCount is null and ProductDetailLineID > " + max_rec_id +
+                   " and GPCategory = 'PROT' and ABS(GrossProfit) > 1";
             executeNonQuery(queryString);
 
             // assign values to TMPCount field for multi line TMP
@@ -1603,12 +1692,13 @@ namespace bogart_wireless.Models
             if (userName == "dave@bogart.com")
             {
                 result = true;
+                userLevel = "Admin";
             }
             else
             {
 
 
-                String queryString = "Select UserName from bogart_2.users where Email = '" + userName + "' and Active = 1";
+                String queryString = "Select UserName, UserLevel from bogart_2.users where Email = '" + userName + "' and Active = 1";
 
                 // Execute the query  
                 SqlCommand command = new SqlCommand(queryString, connection);
@@ -1622,6 +1712,8 @@ namespace bogart_wireless.Models
                 if (reader.HasRows)
                 {
                     result = true;
+                    userLevel = reader.GetString(1);
+
                 }
                 else
                 {
@@ -1759,11 +1851,110 @@ namespace bogart_wireless.Models
             return rateSet;
 
         }
+        public string insertVacationGoals(String repName, DateTime goalStartDate, Int16 goalPercent)
+        {
+            String returnMsg = "";
+            decimal rate = -1;
+            decimal minimum = -1;
+            decimal rotationMinimum = -1;
+            decimal tempMinimum = -1;
+            decimal tempRotationMinimum = -1;
+            DateTime currentStartDate;
+            DateTime goalEndDate;
 
+            // get currentnew line goal for rep
+            String queryString = "Select Category, minimum, rate, AppliesTo, RotationMinimum,startDate from bogart_2.commissionQualifiers " +
+                            "where AppliesTo = '" + repName + "' " +
+                            "AND Category = 'NEW_LINES' " +
+                            "AND startDate = (Select  MAX(StartDate) FROM bogart_2.commissionQualifiers " +
+                            "WHERE Category = 'NEW_LINES' " +
+                            "AND AppliesTo = '" + repName + "' and startDate <= '" + goalStartDate.ToString("d") + "' and(endDate >= '" + goalStartDate.ToString("d") + "' or endDate is null))";
+
+            // Execute the query
+            SqlCommand command = new SqlCommand(queryString, connection);
+            SqlDataReader reader = command.ExecuteReader();
+
+            // did we find an individual goal?
+            if (reader.HasRows)
+            {
+                reader.Read();
+
+                // get current goal values
+                minimum = reader.GetDecimal(1);
+                rate = reader.GetDecimal(2);
+                rotationMinimum = reader.GetDecimal(4);
+                currentStartDate = reader.GetDateTime(5);
+
+
+
+            }
+            else // search for company goal
+            {
+                queryString = "SELECT Category, Minimum, Rate, AppliesTo, RotationMinimum,startDate FROM bogart_2.commissionQualifiers cq " +
+                 "WHERE AppliesTo = 'COMPANY' " +
+                 "AND ( startDate <= '" + goalStartDate.ToString("d") + "' AND ( endDate >= '" + goalStartDate.ToString("d") + "' or endDate is null))  AND Category = 'NEW_LINES' " +
+                 "Order by Category, Minimum, AppliesTo";
+
+                // reset necesary database connection stuff
+                reader.Close();
+                command.CommandText = queryString;
+                reader = command.ExecuteReader();
+
+                // check for company goal
+                if (reader.HasRows)
+                {
+                    reader.Read();
+
+                    // get current goal values
+                    minimum = reader.GetDecimal(1);
+                    rate = reader.GetDecimal(2);
+                    rotationMinimum = reader.GetDecimal(4);
+                    currentStartDate = reader.GetDateTime(5);
+                }
+
+
+            }
+
+            // did we get a current goal
+            if (rate > -1)
+            {
+                // calculate temporary values
+                tempMinimum = minimum * (1M - (goalPercent / 100M));
+                tempRotationMinimum = rotationMinimum * (1M - (goalPercent / 100M));
+                goalEndDate = goalStartDate.AddDays(27);
+
+                // create insertion records
+                String insertSQL = "Insert into bogart_2.commissionQualifiers (startDate, endDate, Category, Minimum, Rate, AppliesTo, RotationMinimum) " +
+                                   "Values ('" + goalStartDate.ToShortDateString() + "', '" + goalEndDate.ToShortDateString() + "', 'NEW_LINES'," + tempMinimum + "," + rate + ",'" + repName + "'," + tempRotationMinimum + ")";
+                executeNonQuery(insertSQL);
+                returnMsg = "Temp goal successfully inserted.";
+
+                //  insertSQL = "Insert into bogart_2.commission_qualifiers (startDate, endDate, Category, Minimum, Rate, AppliesTo, RotationMinimum) " +
+                //                      "Values ('" + goalStartDate.ToShortDateString() + "', '" + goalEndDate.ToShortDateString() + "', 'NEW_LINES'," + tempMinimum + "," + rate + ",'" + repName + "'," + tempRotationMinimum + ")";
+
+                //  goalStartDate = goalEndDate.AddDays(1);
+
+            }
+            else
+            {
+                returnMsg = "Could not find initial goal";
+            }
+
+            return returnMsg;
+
+        }
     }
 
 
 }
+
+
+
+
+
+
+
+
 
 
 
