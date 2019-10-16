@@ -1433,12 +1433,18 @@ namespace bogart_wireless.Models
             String queryString;
             Funcs funcs = new Funcs();
 
+            // set up connection for inserts
+            SqlCommand command = new SqlCommand();
+            command.Connection = connection;
+            command.CommandTimeout = 600;
+
             // convert minDateString to a DateTime object
             minDate = Convert.ToDateTime(minDateString);
 
             // start database transaction
             queryString = "BEGIN TRANSACTION PRODUCTDETAILS";
             //executeNonQuery(queryString);
+
 
             // get highest record ID currently in productDetails
             queryString = "SELECT max(ProductDetailLineID) as maxid FROM bogart_2.productdetails";
@@ -1468,7 +1474,8 @@ namespace bogart_wireless.Models
                                       "AND AdjustedUnitPrice = " + pd.adjustedUnitprice +
                                       " AND TotalSales = " + pd.totalSales +
                                       " AND SoldOn < '" + minDateString + "'";
-                        executeNonQuery(queryString);
+                        command.CommandText = queryString;
+                        command.ExecuteNonQuery();
 
                         // adjust SoldOn to be within the file date range
                         pd.soldOn = minDate;
@@ -1486,12 +1493,21 @@ namespace bogart_wireless.Models
                         "LocationType, TotalProductCoupons, OrigUnitPrice)" +
                         "Values" +
                         "('" + pd.invoiceNo + "', '" + pd.invoicedBy + "', '" + pd.invoicedAt + "', '" + pd.soldBy + "', '" + pd.tenderedBy +
-                        "', '" + pd.soldOn.ToString("MM/dd/yyyy HH:mm:ss") + "', '" + funcs.AddSlashes(pd.invoiceComments) + "', '" + pd.customer + "', '" + pd.productSKU +
+                        "', '" + pd.soldOn.ToString("MM/dd/yyyy HH:mm:ss") + "', '" + funcs.AddSlashes(pd.invoiceComments) + "', '" + funcs.AddSlashes(pd.customer) + "', '" + pd.productSKU +
                         "', '" + pd.TrackingNo + "', '" + pd.soldAsUsed + "', '" + pd.contractNo + "', '" + funcs.AddSlashes(pd.description) + "', '" + pd.refund + "', " + pd.qty +
                         "," + pd.unitCost + "," + pd.totalCost + "," + pd.listPrice + "," + pd.soldFor + "," + pd.adjustedUnitprice +
                         "," + pd.grossProfit + "," + pd.carrierPrice + "," + pd.totalSales + "," + pd.totalDiscount + ",'" + pd.district + "','" + pd.category.Trim() +
                         "','" + pd.locationType + "'," + pd.totalProductCoupons + "," + pd.origUnitPrice + ")";
-                    executeNonQuery(queryString);
+                    command.CommandText = queryString;
+                    try
+                    {
+                        command.ExecuteNonQuery();
+                    }
+                    catch (Exception e)
+                    {
+                        EmailService emailService = new EmailService(SalesData.emailConfiguration);
+                        emailService.QuickSend("ERROR", e.Message, "dave.bogart@bogart-wireless.net", "David Bogart");
+                    }
                     numInserts++;
 
                 }
