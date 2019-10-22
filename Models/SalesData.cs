@@ -1959,7 +1959,36 @@ namespace bogart_wireless.Models
             return returnMsg;
 
         }
+
+        public List<CSNewLines> getNonSalesRepNewLines(String startDateString, String endDateString)
+        {
+            List<CSNewLines> csNewLines = new List<CSNewLines>();
+
+            String queryString = "SELECT SoldBy, SUM(Qty) FROM bogart_2.productdetails p, bogart_2.productskus p1 " +
+                "WHERE p.ProductSKU = p1.ProductSKU AND p1.NewLine = 1 " +
+                "AND SoldOn between  '" + startDateString + "' AND '" + endDateString + "' " +
+                "AND SoldBy IN(SELECT UserName FROM bogart_2.users WHERE Active = 1 AND UserLevel = 'User' " +
+                "AND UserName NOT IN(SELECT AppliesTo FROM bogart_2.commissionbase c)) GROUP BY SoldBy";
+
+            // set up and  the query
+            SqlCommand command = new SqlCommand(queryString, connection);
+            SqlDataReader reader = command.ExecuteReader();
+
+            // did we find any sales?
+            while (reader.Read())
+            {
+                CSNewLines data = new CSNewLines();
+                data.Name = reader.GetString(0);
+                data.NewLineCount = (int) reader.GetDecimal(1);
+                csNewLines.Add(data);
+            }
+
+           return csNewLines;
+        }
+
     }
+
+
 
 
 }
