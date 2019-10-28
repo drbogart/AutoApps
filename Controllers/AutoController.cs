@@ -4,6 +4,7 @@ using Microsoft.Extensions.Options;
 using bogart_wireless.Models;
 using AutoApps.Models;
 using bogart_wireless.Libraries;
+using MyLibraries;
 
 
 
@@ -23,6 +24,7 @@ namespace bogart_wireless.Controllers
             SalesData.emailConfiguration = configuration.Get("ReportFiles");
             SalesData.dbSettings = dbsettings.Value;
             Payroll.generalSettings = generalSettings.Value;
+            ProductDetailsData.dbSettings = dbsettings.Value;
         }
 
         public IActionResult Index()
@@ -41,7 +43,9 @@ namespace bogart_wireless.Controllers
         {
             SalesData salesData = new SalesData();
             int numEmails = salesData.executeFileLoader();
-            ViewBag.Message = "Processed " + numEmails + " emails";
+            ProductDetailsData pd = new ProductDetailsData();
+            pd.loadDailyDashboard();
+            ViewBag.Message = "Processed " + numEmails + " emails; Loaded DailyDashboard";
             return View("Done");
         }
 
@@ -80,6 +84,16 @@ namespace bogart_wireless.Controllers
             Datascape datascape = new Datascape();
             datascape.reconcileAll();
             ViewBag.Message = "Reconciled Datascape";
+            return View("Done");
+
+        }
+
+        // for development only.  Reconcile Datascape 
+        public IActionResult DailyDashboard()
+        {
+            ProductDetailsData pd = new ProductDetailsData();
+            pd.loadDailyDashboard();
+            ViewBag.Message = "Daily Dashboard Loaded";
             return View("Done");
 
         }

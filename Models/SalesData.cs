@@ -1129,13 +1129,13 @@ namespace bogart_wireless.Models
                 queryString = "Select sum(Qty) from #ProductDetails  where SoldBy = '" + activeReps[repNum] + "' " +
                     "AND ProductSKU IN(Select ProductSKU from bogart_2.productSKUS where VoiceLine = 1) " +
                     "AND CONVERT(date, SoldOn) <> SoldOn";
-                RepQualityData[repNum].VoiceLines = (int)decimalValueProductDetailsQuery(queryString);
+                RepQualityData[repNum].VoiceLines = (int) longValueProductDetailsQuery(queryString);
 
                 // get HUM count
                 queryString = "Select sum(Qty) from bogart_2.productdetails  where  SoldBy = '" + activeReps[repNum] + "' AND SoldOn Between '" + startDate + "' AND '" + endDate + "'" +
                "AND ProductSKU IN(Select ProductSKU from bogart_2.productSKUS where HUM = 1) " +
                "AND CONVERT(date, SoldOn) <> SoldOn";
-                RepQualityData[repNum].HUMCount = (int)decimalValueProductDetailsQuery(queryString);
+                RepQualityData[repNum].HUMCount = (int)longValueProductDetailsQuery(queryString);
 
                 // get total GP
                 queryString = "Select sum(GrossProfit) from #ProductDetails where SoldBy = '" + activeReps[repNum] + "'";
@@ -1191,20 +1191,20 @@ namespace bogart_wireless.Models
                 queryString = "Select sum(Qty) from #ProductDetails where SoldBy = '" + activeReps[repNum] + "' " +
                              "AND ProductSKU IN(Select ProductSKU from bogart_2.productSKUS where Upgrade = 1) " +
                              "AND CONVERT(date, SoldOn) <> SoldOn";
-                decimal upgrades = decimalValueProductDetailsQuery(queryString);
+                decimal upgrades = longValueProductDetailsQuery(queryString);
 
                 // get new line count
                 queryString = "Select sum(Qty) from #ProductDetails  where SoldBy = '" + activeReps[repNum] + "' " +
                             "AND ProductSKU IN(Select ProductSKU from bogart_2.productSKUS where NewLine = 1) " +
                             "AND CONVERT(date, SoldOn) <> SoldOn";
-                decimal newLines = decimalValueProductDetailsQuery(queryString);
+                decimal newLines = longValueProductDetailsQuery(queryString);
                 RepQualityData[repNum].NewLines = Math.Round(newLines, 0);
 
                 // get strategic growth count
                 queryString = "Select sum(Qty) from #ProductDetails  where SoldBy = '" + activeReps[repNum] + "' " +
                             "AND ProductSKU IN(Select ProductSKU from bogart_2.productSKUS where NewStrategicGrowth = 1) " +
                          "AND CONVERT(date, SoldOn) <> SoldOn";
-                decimal pullThru = decimalValueProductDetailsQuery(queryString);
+                decimal pullThru = longValueProductDetailsQuery(queryString);
 
                 // calculate quality ratios
                 if (newLines > 0)
@@ -1235,10 +1235,10 @@ namespace bogart_wireless.Models
                            "AND Description != 'Hardware Only Rate Plan' and Category = '>> Activations >> Verizon Wireless >> Rate Plans' " +
                            "AND CONVERT(date, SoldOn) <> SoldOn " +
                            "AND SoldBy = '" + activeReps[repNum] + "'";
-                decimal totalPhones = decimalValueProductDetailsQuery(queryString);
+                long totalPhones = longValueProductDetailsQuery(queryString);
                 queryString = "SELECT SUM(TrafficCount) as Traffic FROM bogart_2.trafficcountsbyemployee WHERE Date >= '" + startDate + "' AND Date <= '" + endTrafficDate + "' " +
                     "AND Employee = '" + activeReps[repNum] + "'";
-                decimal totalTraffic = longValueProductDetailsQuery(queryString);
+                long totalTraffic = longValueProductDetailsQuery(queryString);
                 if (totalTraffic > 0)
                 {
                     RepQualityData[repNum].ClosingRate = Math.Round((totalPhones / (decimal)totalTraffic) * 100, 2);
@@ -1252,23 +1252,23 @@ namespace bogart_wireless.Models
                 queryString = "SELECT Sum(Qty) as TradeInCount FROM #ProductDetails p, bogart_2.productskus s " +
                         "WHERE p.ProductSKU = s.ProductSKU " +
                         "AND s.TradeIn = 1 AND SoldBy = '" + activeReps[repNum] + "'";
-                decimal totalTradeIns = decimalValueProductDetailsQuery(queryString);
-                RepQualityData[repNum].TradeInRate = Math.Round(totalTradeIns * 100 / RepQualityData[repNum].VoiceLines, 2);
+                long totalTradeIns = longValueProductDetailsQuery(queryString);
+                RepQualityData[repNum].TradeInRate = Math.Round(totalTradeIns * 100 /(decimal) RepQualityData[repNum].VoiceLines, 2);
 
 
                 // calculate Ready/Go rate
                 queryString = "SELECT SUM(Qty) as ReadyGoCount FROM #ProductDetails p, bogart_2.productskus s " +
                         "WHERE p.ProductSKU = s.ProductSKU " +
                         "AND s.ReadyGO = 1 AND SoldBy = '" + activeReps[repNum] + "'";
-                decimal totalReadyGO = decimalValueProductDetailsQuery(queryString);
-                RepQualityData[repNum].ReadyGoTakeRate = Math.Round(totalReadyGO * 100 / RepQualityData[repNum].VoiceLines, 2);
+                long totalReadyGO = longValueProductDetailsQuery(queryString);
+                RepQualityData[repNum].ReadyGoTakeRate = Math.Round((decimal) totalReadyGO * 100 / RepQualityData[repNum].VoiceLines, 2);
 
                 // calculate Ready/Go GP per sale
                 queryString = "SELECT SUM(Grossprofit) as ReadyGoGP FROM #ProductDetails p, bogart_2.productskus s " +
                         "WHERE p.ProductSKU = s.ProductSKU " +
                         "AND s.ReadyGO = 1 AND SoldBy = '" + activeReps[repNum] + "'";
                 decimal totalReadyGOGP = decimalValueProductDetailsQuery(queryString);
-                RepQualityData[repNum].ReadyGoGP = Math.Round(totalReadyGOGP / RepQualityData[repNum].VoiceLines, 2);
+                RepQualityData[repNum].ReadyGoGP = Math.Round((decimal)totalReadyGOGP / RepQualityData[repNum].VoiceLines, 2);
 
                 // calculate commission rate
                 if (endDate.Subtract(startDate).TotalDays > 21)
@@ -1662,7 +1662,7 @@ namespace bogart_wireless.Models
         /* calcualte and assign TMP counts to single and multi-line TMP */
         private void calc_TMP_counts(long max_rec_id)
         {
-            decimal tmp_count;
+            long tmp_count;
 
             // assign values to TMPCount field for single line TMP
             String queryString = "Update bogart_2.productdetails set TMPCount = Qty where TMPCount is null and ProductDetailLineID > " + max_rec_id +
@@ -1688,7 +1688,7 @@ namespace bogart_wireless.Models
                     // find number of lines on this TMP invoice
                     queryString = "SELECT SUM(p.Qty) as TMPMultiCount FROM bogart_2.productdetails p, bogart_2.productskus s " +
                             " WHERE p.InvoiceNo = '" + reader.GetString(1) + "' AND p.ProductSKU = s.ProductSKU AND(s.NewLine = 1 OR s.Upgrade = 1)";
-                    tmp_count = decimalValueProductDetailsQuery(queryString);
+                    tmp_count = longValueProductDetailsQuery(queryString);
 
                     // update the TMP count on that multi-line record
                     queryString = "Update bogart_2.productdetails Set TMPCount = " + tmp_count + " Where ProductDetailLineID = " + reader.GetInt32(0);
@@ -1979,7 +1979,7 @@ namespace bogart_wireless.Models
             {
                 CSNewLines data = new CSNewLines();
                 data.Name = reader.GetString(0);
-                data.NewLineCount = (int) reader.GetDecimal(1);
+                data.NewLineCount = (int) reader.GetInt32(1);
                 csNewLines.Add(data);
             }
 
