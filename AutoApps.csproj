@@ -5,6 +5,10 @@
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="Models\SalesData.cs" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <PackageReference Include="ExcelDataReader" Version="3.6.0" />
