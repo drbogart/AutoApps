@@ -91,7 +91,7 @@ namespace bogart_wireless.Controllers
         public IActionResult DailyDashboard()
         {
             ProductDetailsData pd = new ProductDetailsData();
-            pd.loadDailyDashboard();
+            pd.loadDailyDashboard(true);
             ViewBag.Message = "Daily Dashboard Loaded";
             return View("Done");
 
