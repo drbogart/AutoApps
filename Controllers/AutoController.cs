@@ -24,6 +24,7 @@ namespace bogart_wireless.Controllers
             SalesData.dbSettings = dbsettings.Value;
             Payroll.generalSettings = generalSettings.Value;
             ProductDetailsData.dbSettings = dbsettings.Value;
+            SlingTimeClock.dbSettings = dbsettings.Value;
         }
 
         public IActionResult Index()
