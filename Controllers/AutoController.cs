@@ -43,12 +43,14 @@ namespace bogart_wireless.Controllers
         {
             SalesData salesData = new SalesData();
             int numEmails = salesData.executeFileLoader();
+            ViewBag.Message = "Processed " + numEmails + " emails";
             if (numEmails > 0)
             {
                 ProductDetailsData pd = new ProductDetailsData();
                 pd.loadDailyDashboard();
+                ViewBag.Message += "; Loaded DailyDashboard";
             }
-            ViewBag.Message = "Processed " + numEmails + " emails; Loaded DailyDashboard";
+
             return View("Done");
         }
 
