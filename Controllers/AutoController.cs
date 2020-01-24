@@ -102,6 +102,14 @@ namespace bogart_wireless.Controllers
             return View("Done");
 
         }
+
+        public IActionResult LoadDailyNeedsData()
+        {
+            ProductDetailsData pd = new ProductDetailsData();
+            pd.loadDailyNeedsData();
+            ViewBag.Message = "Daily Needs Loaded";
+            return View("Done");
+        }
     }
    
 }
