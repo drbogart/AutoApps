@@ -4,6 +4,9 @@ using Microsoft.Data.SqlClient;
 using System.Linq;
 using System.Text.RegularExpressions;
 using bogart_wireless.Libraries;
+using ExcelDataReader;
+using System.IO;
+using System.Collections;
 
 namespace bogart_wireless.Models
 {
@@ -50,11 +53,42 @@ namespace bogart_wireless.Models
                         datascape.dateReceived = email.MessageDate;
                         loadDatascapeEmailData(datascape);
                     }
+                    if (isDatascapeEmailAugust2020(email.Subject, email.Content))
+                    {
+                        DatascapeEmail datascape = extractDatascapeDataAugust2020(email.Subject, email.HTMLContent);
+                        datascape.dateReceived = email.MessageDate;
+                        loadDatascapeEmailDataAugust2020(datascape);
+                    }
                 }
             }
         }
 
         private void loadDatascapeEmailData(DatascapeEmail datascape)
+        {
+            // check that this data hasn't already been loaded
+            String queryString = "Select DRRID from bogart_2.DatascapeReconRecord where ATIStoreID = '" + datascape.storeID + "' and TransactionStartDate = '" + datascape.transStartDate.ToString("d") + "' and TransactionEndDate = '" + datascape.transEndDate.ToString("d") + "'";
+            long DRRID = longValueQuery(queryString);
+
+            if (DRRID == 0)
+            {
+
+                // create a new record in DatascapeReconRecord table and get DRRID
+                string insertSQL = "Insert Into bogart_2.DatascapeReconRecord (ATIStoreID, DateATIReportReceived, TransactionStartDate, TransactionEndDate, ATIAmount) Values ('" + datascape.storeID + "', '" + datascape.dateReceived + "','" + datascape.transStartDate.ToString("d") + "', '" + datascape.transEndDate.ToString("d") + "', " + datascape.totalAmount + ")";
+                executeNonQuery(insertSQL);
+                queryString = "select Max(DRRID) from bogart_2.DatascapeReconRecord where ATIStoreID = '" + datascape.storeID + "' and DateATIReportReceived = '" + datascape.dateReceived.ToString("d") + "'";
+                DRRID = longValueQuery(queryString);
+
+                // load into datascape transaction table
+                foreach (DatascapeTransaction trans in datascape.transactions)
+                {
+                    insertSQL = "Insert into bogart_2.DatascapeEmailTransactions (DRRID, DatascapeTransType, DateIn, AgentID, MobileNumber, SalesID, RateType, Platform, BatchID, ControlNumber, Invoice, PaymentAmount,TransFee, DebitAmount) Values (" + DRRID + ", '" + trans.transType + "', '" + trans.transDate.ToString("d") + "', '" + trans.agentID + "', '" + trans.mobileNumber + "', '" + trans.salesID + "', '" + trans.rateType + "', '" + trans.platform + "', '" + trans.batchID + "', '" + trans.controlNumber + "', '" + trans.invoiceNumber + "', " + trans.paymentAmount + ", " + trans.transFee + ", " + trans.debitAmount + ")";
+                    executeNonQuery(insertSQL);
+                }
+            }
+
+        }
+
+        private void loadDatascapeEmailDataAugust2020(DatascapeEmail datascape)
         {
             // check that this data hasn't already been loaded
             String queryString = "Select DRRID from bogart_2.DatascapeReconRecord where ATIStoreID = '" + datascape.storeID + "' and TransactionStartDate = '" + datascape.transStartDate.ToString("d") + "' and TransactionEndDate = '" + datascape.transEndDate.ToString("d") + "'";
@@ -217,12 +251,145 @@ namespace bogart_wireless.Models
             return datascape;
         }
 
+        private DatascapeEmail extractDatascapeDataAugust2020(String subject, String message)
+        {
+            DatascapeEmail datascape = new DatascapeEmail();
+            int transCount = 0;
+            List<DateTime> transDates = new List<DateTime>();
+
+            // get message info
+            String pattern = @"\b(WZ192|WZ298|WZ299)\b";
+            datascape.storeID = Regex.Match(subject, pattern, RegexOptions.IgnoreCase).Value;
+
+            // split email into rows
+            string[] rows = message.Split("<tr");
+
+            // process each row
+            foreach (string row in rows)
+            {
+                // split out each cell
+                string[] cells = row.Split("<td");
+                if (cells.Count() == 14)
+                {
+                    DatascapeTransaction thisTrans = new DatascapeTransaction();
+                    transCount++;
+
+                    // get trans type
+                    string cellHtml = "<td" + cells[1];
+                    string rawString = Regex.Replace(cellHtml, "<.*?>", string.Empty);
+                    thisTrans.transType = rawString.Trim();
+
+                    // get trans date
+                    cellHtml = "<td" + cells[2];
+                    rawString = Regex.Replace(cellHtml, "<.*?>", string.Empty);
+                    string transDateString = rawString.Trim();
+                    transDateString = transDateString.Substring(4, 2) + "/" + transDateString.Substring(6, 2) + "/" + transDateString.Substring(0, 4);
+                    thisTrans.transDate = Convert.ToDateTime(transDateString);
+
+                    // check for min and max transaction dates
+                    if (thisTrans.transDate < datascape.transStartDate || datascape.transStartDate == DateTime.MinValue)
+                    {
+                        datascape.transStartDate = thisTrans.transDate.Date;
+                    }
+                    if (thisTrans.transDate > datascape.transEndDate)
+                    {
+                        datascape.transEndDate = thisTrans.transDate.Date;
+                    }
+
+                    // get agent ID
+                    cellHtml = "<td" + cells[3];
+                    rawString = Regex.Replace(cellHtml, "<.*?>", string.Empty);
+                    thisTrans.agentID = Convert.ToInt16(rawString.Trim());
+
+                    // get mobile number
+                    cellHtml = "<td" + cells[4];
+                    rawString = Regex.Replace(cellHtml, "<.*?>", string.Empty);
+                    thisTrans.mobileNumber = rawString.Trim();
+
+                    // get rep name
+                    cellHtml = "<td" + cells[5];
+                    rawString = Regex.Replace(cellHtml, "<.*?>", string.Empty);
+                    thisTrans.salesID = rawString.Trim();
+
+                    // get rate type
+                    cellHtml = "<td" + cells[6];
+                    rawString = Regex.Replace(cellHtml, "<.*?>", string.Empty);
+                    thisTrans.rateType = rawString.Trim();
+
+                    // get platform ID
+                    cellHtml = "<td" + cells[7];
+                    rawString = Regex.Replace(cellHtml, "<.*?>", string.Empty);
+                    thisTrans.platform = rawString.Trim();
+
+                    // get batch ID
+                    cellHtml = "<td" + cells[8];
+                    rawString = Regex.Replace(cellHtml, "<.*?>", string.Empty);
+                    thisTrans.batchID = rawString.Trim();
+
+                    // get control number
+                    cellHtml = "<td" + cells[9];
+                    rawString = Regex.Replace(cellHtml, "<.*?>", string.Empty);
+                    thisTrans.controlNumber = rawString.Trim();
+
+                    // get RQ invoice number entered by rep
+                    cellHtml = "<td" + cells[10];
+                    rawString = Regex.Replace(cellHtml, "<.*?>", string.Empty);
+                    thisTrans.invoiceNumber = rawString.Trim();
+
+                    // get payment amount
+                    cellHtml = "<td" + cells[11];
+                    rawString = Regex.Replace(cellHtml, "<.*?>", string.Empty);
+                    thisTrans.paymentAmount = Convert.ToDecimal(rawString.Trim());
+
+                    // transcation fee
+                    cellHtml = "<td" + cells[12];
+                    rawString = Regex.Replace(cellHtml, "<.*?>", string.Empty);
+                    thisTrans.transFee = Convert.ToDecimal(rawString.Trim());
+
+                    // debit amount
+                    cellHtml = "<td" + cells[13];
+                    rawString = Regex.Replace(cellHtml, "<.*?>", string.Empty);
+                    thisTrans.debitAmount = Convert.ToDecimal(rawString.Trim());
+
+                    datascape.transactions.Add(thisTrans);
+                }
+                else // not a transaction row
+                {
+                    // check whether this row contains total amount
+                    if (row.Contains("has the following datascape transactions totaling"))
+                    {
+                        string amountString = row.Substring(row.IndexOf("$") + 1);
+                        amountString = amountString.Substring(0, amountString.IndexOf(".") + 3);
+                        amountString = Regex.Replace(amountString, "'", string.Empty);
+                        datascape.totalAmount = Convert.ToDecimal(amountString);
+                    }
+                }
+            }
+
+            return datascape;
+        }
+
         // check whether the subject and message indicate a Datascape email
         private bool isDatascapeEmail(String subject, string message)
         {
             if (subject.Contains("Datascape Notification")
                 && message.Contains("ATI has the following datascape transactions totaling")
                 && message.Contains("An ACH will be issued for this amount tomorrow and will be debited from your account number ending"))
+            {
+                return true;
+            }
+
+            else
+            {
+                return false;
+            }
+
+        }
+
+        // check whether the subject and message indicate a Datascape email with new August 2020 format
+        private bool isDatascapeEmailAugust2020(String subject, string message)
+        {
+            if (subject.Contains("Datascape") && message.Contains("Payment Type") && message.Contains("ACH Amount"))
             {
                 return true;
             }
@@ -830,6 +997,80 @@ namespace bogart_wireless.Models
                 String updateSQL = "Update bogart_2.datascapeReconRecord set Reported = 1 where DRRID = " + DRRID;
                 executeNonQuery(updateSQL);
             }
+        }
+
+        public int loadDatascapeLedger(string fileName, Hashtable indices)
+        {
+            int rowCount = -1;
+            List<DatascapeTransaction> rows = new List<DatascapeTransaction>();
+
+            IExcelDataReader excelReader;
+            String dataString;
+
+            // open file stream
+            FileStream stream = File.Open(fileName, FileMode.Open, FileAccess.Read);
+
+            // initiate Excel reader through ExcelDatareader library
+            if (Path.GetExtension(fileName) == ".xls")
+            {
+                excelReader = ExcelReaderFactory.CreateBinaryReader(stream);
+            }
+            else
+            {
+                excelReader = ExcelReaderFactory.CreateOpenXmlReader(stream);
+            }
+
+            System.Data.DataSet result = excelReader.AsDataSet();
+            int colCount = excelReader.FieldCount;
+
+            while (excelReader.Read())
+            {
+
+                //is hash table set up?
+                if (indices.Count == 0)
+                {
+                    // this should be a column headings row.  Set up hash table
+                    for (int i = 0; i < colCount; i++)
+                    {
+                        indices.Add(excelReader.GetString(i).Trim(), i);
+                    }
+                }
+                else
+                {
+                    // check whether we've finished with time clock records
+                    dataString = excelReader.GetString((int)indices["Store"]);
+                    if (!(dataString is null) )
+                    {
+
+                            // increment the row count
+                            rowCount++;
+
+                            // add an element to the list
+                            rows.Add(new DatascapeTransaction());
+
+
+                            // put data into ne list item
+                            rows[rowCount].storeID = dataString;
+                            rows[rowCount].transDate = excelReader.GetDateTime((int)indices["Transaction Date"]);
+                            rows[rowCount].invoiceNumber = excelReader.GetString((int)indices["Invoice #"]);
+                            rows[rowCount].controlNumber = excelReader.GetString((int)indices["Control #"]);
+                            rows[rowCount].mobileNumber = excelReader.GetString((int)indices["Mobile #"]);
+                            rows[rowCount].salesID = excelReader.GetString((int)indices["User"]);
+                            rows[rowCount].transType = excelReader.GetString((int)indices["Payment Type"]);
+                            rows[rowCount].paymentAmount = (decimal) excelReader.GetDouble((int)indices["Transaction Amount"]);
+                            rows[rowCount].transFee = (decimal) excelReader.GetDouble((int)indices["Fees"]);
+                            rows[rowCount].debitAmount = (decimal) excelReader.GetDouble((int)indices["ACH Amount"]);
+
+                    }
+
+                }
+
+            }
+
+            stream.Close();
+            return rows.Count;
+
+
         }
 
         private void executeNonQuery(String queryString)
