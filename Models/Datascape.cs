@@ -49,6 +49,8 @@ namespace bogart_wireless.Models
                 {
                     if (isDatascapeEmail(email.Subject, email.Content))
                     {
+
+                        // flag email as processed.  Even if there's an error, just means we identified this as Datascape email
                         DatascapeEmail datascape = extractDatascapeData(email.Subject, email.HTMLContent);
                         datascape.dateReceived = email.MessageDate;
                         loadDatascapeEmailData(datascape);
