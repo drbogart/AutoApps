@@ -26,6 +26,8 @@ namespace bogart_wireless.Controllers
             Payroll.generalSettings = generalSettings.Value;
             ProductDetailsData.dbSettings = dbsettings.Value;
             SlingTimeClock.dbSettings = dbsettings.Value;
+            StyleMappings.dbSettings = dbsettings.Value;
+            StyleMappings.generalSettings = generalSettings.Value;
         }
 
         public IActionResult Index()
