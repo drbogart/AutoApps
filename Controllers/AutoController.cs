@@ -53,14 +53,7 @@ namespace bogart_wireless.Controllers
                 ProductDetailsData pd = new ProductDetailsData();
                 pd.loadDailyDashboard();
                 ViewBag.Message += "; Loaded DailyDashboard";
-                if (pd.loadDailyNeedsData() >= 0)
-                {
-                    ViewBag.Message += "; Loaded Daily Needs Data";
-                }
-                else
-                {
-                    ViewBag.Message += "; Daily Needs Data Failed";
-                }
+
                 
 
             }
