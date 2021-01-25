@@ -26,6 +26,7 @@ namespace bogart_wireless.Controllers
             Payroll.generalSettings = generalSettings.Value;
             ProductDetailsData.dbSettings = dbsettings.Value;
             SlingTimeClock.dbSettings = dbsettings.Value;
+            QMinder.dbSettings = dbsettings.Value;
             StyleMappings.dbSettings = dbsettings.Value;
             StyleMappings.generalSettings = generalSettings.Value;
         }
@@ -52,14 +53,7 @@ namespace bogart_wireless.Controllers
                 ProductDetailsData pd = new ProductDetailsData();
                 pd.loadDailyDashboard();
                 ViewBag.Message += "; Loaded DailyDashboard";
-                if (pd.loadDailyNeedsData() >= 0)
-                {
-                    ViewBag.Message += "; Loaded Daily Needs Data";
-                }
-                else
-                {
-                    ViewBag.Message += "; Daily Needs Data Failed";
-                }
+
                 
 
             }
