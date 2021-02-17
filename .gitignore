@@ -339,3 +339,5 @@ ASALocalRun/
 # BeatPulse healthcheck temp database
 healthchecksdb
 *.xls
+/temp/Visitors - East Aurora.xlsx
+/temp/Visitors - Springville.xlsx

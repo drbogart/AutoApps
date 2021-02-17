@@ -313,7 +313,7 @@ namespace bogart_wireless.Models
                         // pull the data from productdetails into RQDatascapeTransactions
                         reader2.Close();
                         DateTime endDate = transEndDate.AddDays(1);
-                        queryString = "Insert into bogart_2.RQDatascapeTransactions (DRRID, SoldOn, InvoiceNo, SoldBy, Description, SoldFor, MobileNumber) Select " + DRRID + ", SoldOn, InvoiceNo, SoldBy, Description, AdjustedUnitPrice, TrackingNo from bogart_2.productdetails where InvoicedAt = '" + RQStoreID + "' and SoldOn >= '" + transStartDate + "' and SoldOn < '" + endDate + "' and Category Like '>> Bill Payment%' and Description in ('Datascape Postpaid Payment','Datascape Prepaid Refill', 'Datascape DPP Buy Out Postpaid Payment')";
+                        queryString = "Insert into bogart_2.RQDatascapeTransactions (DRRID, SoldOn, InvoiceNo, SoldBy, Description, SoldFor, MobileNumber) Select " + DRRID + ", SoldOn, InvoiceNo, SoldBy, Description, AdjustedUnitPrice, TrackingNo from bogart_2.productdetails where InvoicedAt = '" + RQStoreID + "' and SoldOn >= '" + transStartDate + "' and SoldOn < '" + endDate + "' and Category Like '>> Bill Payment%' and Description in (Select Distinct RQTransType From bogart_2.DatascapeTransTypeMatches)";
                         command2.CommandText = queryString;
                         reader2 = command2.ExecuteReader();
                     }
