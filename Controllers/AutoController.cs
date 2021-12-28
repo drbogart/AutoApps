@@ -24,6 +24,7 @@ namespace bogart_wireless.Controllers
             SalesData.dbSettings = dbsettings.Value;
             SalesData.generalSettings = generalSettings.Value;
             Payroll.generalSettings = generalSettings.Value;
+            Payroll.dbSettings = dbsettings.Value;
             ProductDetailsData.dbSettings = dbsettings.Value;
             SlingTimeClock.dbSettings = dbsettings.Value;
             QMinder.dbSettings = dbsettings.Value;
