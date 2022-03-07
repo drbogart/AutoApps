@@ -30,6 +30,8 @@ namespace bogart_wireless.Controllers
             QMinder.dbSettings = dbsettings.Value;
             StyleMappings.dbSettings = dbsettings.Value;
             StyleMappings.generalSettings = generalSettings.Value;
+            EmailList.dbSettings = dbsettings.Value;
+
         }
 
         public IActionResult Index()

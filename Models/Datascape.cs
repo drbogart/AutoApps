@@ -853,19 +853,11 @@ namespace bogart_wireless.Models
 
                 // send a report email
                 EmailService emailService = new EmailService(Datascape.emailConfiguration);
-                EmailMessage emailMessage = new EmailMessage();
-                
-                string[] emailList = generalSettings.DatascapeEmailList.Split(',');
-                foreach (String email in emailList)
-                {
-                    EmailAddress emailToAddress = new EmailAddress();
-                    emailToAddress.Address = email;
-                    emailMessage.ToAddresses.Add(emailToAddress);
-                    //emailService.QuickSend(emailSubject, message, email, "");
-                }
-                emailMessage.Subject = emailSubject;
-                emailMessage.Content = message;
-                emailService.Send(emailMessage);
+
+                // new method for using trable-driven email lists
+                EmailList emailList = new EmailList();
+                List<String> emails = emailList.getEmailList("Datascape");
+                emailService.QuickSend(emailSubject, message, emails);
 
                 // update DatascapeReconRecord
                 String updateSQL = "Update bogart_2.datascapeReconRecord set Reported = 1 where DRRID = " + DRRID;
