@@ -57,7 +57,7 @@ namespace bogart_wireless.Controllers
                 pd.loadDailyDashboard();
                 ViewBag.Message += "; Loaded DailyDashboard";
 
-                
+
 
             }
 
@@ -120,6 +120,14 @@ namespace bogart_wireless.Controllers
             ViewBag.Message = "Daily Needs Loaded";
             return View("Done");
         }
+
+        public IActionResult processExternalClients()
+        {
+            SalesData salesData = new SalesData();
+            int numClients = salesData.processExternalClientData();
+            ViewBag.Message = "Processed " + numClients + " client";
+            return View("Done");
+        }
+
     }
-   
 }

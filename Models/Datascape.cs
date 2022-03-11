@@ -89,44 +89,69 @@ namespace bogart_wireless.Models
             }
         }
 
-            private void loadDatascapeEmailData(DatascapeEmail datascape)
-            {
-                // check that this data hasn't already been loaded
-                String queryString = "Select DRRID from bogart_2.DatascapeReconRecord where ATIStoreID = '" + datascape.storeID + "' and TransactionStartDate = '" + datascape.transStartDate.ToString("d") + "' and TransactionEndDate = '" + datascape.transEndDate.ToString("d") + "'";
-                long DRRID = longValueQuery(queryString);
-
-                if (DRRID == 0)
-                {
-
-                    // create a new record in DatascapeReconRecord table and get DRRID
-                    string insertSQL = "Insert Into bogart_2.DatascapeReconRecord (ATIStoreID, DateATIReportReceived, TransactionStartDate, TransactionEndDate, ATIAmount) Values ('" + datascape.storeID + "', '" + datascape.dateReceived + "','" + datascape.transStartDate.ToString("d") + "', '" + datascape.transEndDate.ToString("d") + "', " + datascape.totalAmount + ")";
-                    executeNonQuery(insertSQL);
-                    queryString = "select Max(DRRID) from bogart_2.DatascapeReconRecord where ATIStoreID = '" + datascape.storeID + "' and DateATIReportReceived = '" + datascape.dateReceived.ToString("d") + "'";
-                    DRRID = longValueQuery(queryString);
-
-                    // load into datascape transaction table
-                    foreach (DatascapeTransaction trans in datascape.transactions)
-                    {
-                        insertSQL = "Insert into bogart_2.DatascapeEmailTransactions (DRRID, DatascapeTransType, DateIn, AgentID, MobileNumber, SalesID, RateType, Platform, BatchID, ControlNumber, Invoice, PaymentAmount,TransFee, DebitAmount) Values (" + DRRID + ", '" + trans.transType + "', '" + trans.transDate.ToString("d") + "', '" + trans.agentID + "', '" + trans.mobileNumber + "', '" + trans.salesID + "', '" + trans.rateType + "', '" + trans.platform + "', '" + trans.batchID + "', '" + trans.controlNumber + "', '" + trans.invoiceNumber + "', " + trans.paymentAmount + ", " + trans.transFee + ", " + trans.debitAmount + ")";
-                        executeNonQuery(insertSQL);
-                    }
-                }
-
-            }
-
-
-        public void loadAndMatch()
+        public void loadDatascapeEmailData(DatascapeEmail datascape)
         {
+            // check that this data hasn't already been loaded
+            String queryString = "Select DRRID from bogart_2.DatascapeReconRecord where ATIStoreID = '" + datascape.storeID + "' and TransactionStartDate = '" + datascape.transStartDate.ToString("d") + "' and TransactionEndDate = '" + datascape.transEndDate.ToString("d") + "'";
+            long DRRID = longValueQuery(queryString);
 
-            loadRQData();
-            transactionMatcher();
-            sendDatascapeReports();
+            if (DRRID == 0)
+            {
+
+                // create a new record in DatascapeReconRecord table and get DRRID
+                string insertSQL = "Insert Into bogart_2.DatascapeReconRecord (ATIStoreID, DateATIReportReceived, TransactionStartDate, TransactionEndDate, ATIAmount) Values ('" + datascape.storeID + "', '" + datascape.dateReceived + "','" + datascape.transStartDate.ToString("d") + "', '" + datascape.transEndDate.ToString("d") + "', " + datascape.totalAmount + ")";
+                executeNonQuery(insertSQL);
+                queryString = "select Max(DRRID) from bogart_2.DatascapeReconRecord where ATIStoreID = '" + datascape.storeID + "' and DateATIReportReceived = '" + datascape.dateReceived.ToString("d") + "'";
+                DRRID = longValueQuery(queryString);
+
+                // load into datascape transaction table
+                foreach (DatascapeTransaction trans in datascape.transactions)
+                {
+                    insertSQL = "Insert into bogart_2.DatascapeEmailTransactions (DRRID, DatascapeTransType, DateIn, AgentID, MobileNumber, SalesID, RateType, Platform, BatchID, ControlNumber, Invoice, PaymentAmount,TransFee, DebitAmount) Values (" + DRRID + ", '" + trans.transType + "', '" + trans.transDate.ToString("d") + "', '" + trans.agentID + "', '" + trans.mobileNumber + "', '" + trans.salesID + "', '" + trans.rateType + "', '" + trans.platform + "', '" + trans.batchID + "', '" + trans.controlNumber + "', '" + trans.invoiceNumber + "', " + trans.paymentAmount + ", " + trans.transFee + ", " + trans.debitAmount + ")";
+                    executeNonQuery(insertSQL);
+                }
+            }
 
         }
 
-        private void loadRQData()
+        public void loadClientDatascapeEmailData(Client client, DatascapeEmail datascape)
         {
-            loadRQDatascapeTransactions();
+            // check that this data hasn't already been loaded
+            String queryString = "Select DRRID from " + client.schema + ".DatascapeReconRecord where ATIStoreID = '" + datascape.storeID + "' and TransactionStartDate = '" + datascape.transStartDate.ToString("d") + "' and TransactionEndDate = '" + datascape.transEndDate.ToString("d") + "'";
+            long DRRID = longValueQuery(queryString);
+
+            if (DRRID == 0)
+            {
+
+                // create a new record in DatascapeReconRecord table and get DRRID
+                string insertSQL = "Insert Into " + client.schema + ".DatascapeReconRecord (ATIStoreID, DateATIReportReceived, TransactionStartDate, TransactionEndDate, ATIAmount) Values ('" + datascape.storeID + "', '" + datascape.dateReceived + "','" + datascape.transStartDate.ToString("d") + "', '" + datascape.transEndDate.ToString("d") + "', " + datascape.totalAmount + ")";
+                executeNonQuery(insertSQL);
+                queryString = "select Max(DRRID) from " + client.schema + ".DatascapeReconRecord where ATIStoreID = '" + datascape.storeID + "' and DateATIReportReceived = '" + datascape.dateReceived.ToString("d") + "'";
+                DRRID = longValueQuery(queryString);
+
+                // load into datascape transaction table
+                foreach (DatascapeTransaction trans in datascape.transactions)
+                {
+                    insertSQL = "Insert into " + client.schema + ".DatascapeEmailTransactions (DRRID, DatascapeTransType, DateIn, AgentID, MobileNumber, SalesID, RateType, Platform, BatchID, ControlNumber, Invoice, PaymentAmount,TransFee, DebitAmount) Values (" + DRRID + ", '" + trans.transType + "', '" + trans.transDate.ToString("d") + "', '" + trans.agentID + "', '" + trans.mobileNumber + "', '" + trans.salesID + "', '" + trans.rateType + "', '" + trans.platform + "', '" + trans.batchID + "', '" + trans.controlNumber + "', '" + trans.invoiceNumber + "', " + trans.paymentAmount + ", " + trans.transFee + ", " + trans.debitAmount + ")";
+                    executeNonQuery(insertSQL);
+                }
+            }
+
+        }
+
+        public void loadAndMatch(Client client = null)
+        {
+
+            loadRQData(client);
+            matchDatascapeTransactions(client);
+            sendDatascapeReports(client);
+
+        }
+
+
+        private void loadRQData(Client client = null)
+        {
+            loadRQDatascapeTransactions(client);
 
         }
 
@@ -135,7 +160,7 @@ namespace bogart_wireless.Models
             matchDatascapeTransactions();
         }
 
-        private DatascapeEmail extractDatascapeData(String subject, String message)
+        public DatascapeEmail extractDatascapeData(String subject, String message)
         {
             DatascapeEmail datascape = new DatascapeEmail();
             int transCount = 0;
@@ -253,9 +278,127 @@ namespace bogart_wireless.Models
             return datascape;
         }
 
+        public DatascapeEmail extractClientDatascapeData(Client client, String subject, String message)
+        {
+            DatascapeEmail datascape = new DatascapeEmail();
+            int transCount = 0;
+            List<DateTime> transDates = new List<DateTime>();
+
+            // figure out which store this applies to
+            String pattern = @"\b(WZ192|WZ298|WZ299)\b";
+            datascape.storeID = Regex.Match(subject, pattern, RegexOptions.IgnoreCase).Value;
+
+            // split email into rows
+            string[] rows = message.Split("<tr");
+
+            // process each row
+            foreach (string row in rows)
+            {
+                // split out each cell
+                string[] cells = row.Split("<td");
+                if (cells.Count() == 14)
+                {
+                    DatascapeTransaction thisTrans = new DatascapeTransaction();
+                    transCount++;
+
+                    // get trans type
+                    string cellHtml = "<td" + cells[1];
+                    string rawString = Regex.Replace(cellHtml, "<.*?>", string.Empty);
+                    thisTrans.transType = rawString.Trim();
+
+                    // get trans date
+                    cellHtml = "<td" + cells[2];
+                    rawString = Regex.Replace(cellHtml, "<.*?>", string.Empty);
+                    string transDateString = rawString.Trim();
+                    transDateString = transDateString.Substring(4, 2) + "/" + transDateString.Substring(6, 2) + "/" + transDateString.Substring(0, 4);
+                    thisTrans.transDate = Convert.ToDateTime(transDateString);
+
+                    // check for min and max transaction dates
+                    if (thisTrans.transDate < datascape.transStartDate || datascape.transStartDate == DateTime.MinValue)
+                    {
+                        datascape.transStartDate = thisTrans.transDate.Date;
+                    }
+                    if (thisTrans.transDate > datascape.transEndDate)
+                    {
+                        datascape.transEndDate = thisTrans.transDate.Date;
+                    }
+
+                    // get agent ID
+                    cellHtml = "<td" + cells[3];
+                    rawString = Regex.Replace(cellHtml, "<.*?>", string.Empty);
+                    thisTrans.agentID = Convert.ToInt16(rawString.Trim());
+
+                    // get mobile number
+                    cellHtml = "<td" + cells[4];
+                    rawString = Regex.Replace(cellHtml, "<.*?>", string.Empty);
+                    thisTrans.mobileNumber = rawString.Trim();
+
+                    // get rep name
+                    cellHtml = "<td" + cells[5];
+                    rawString = Regex.Replace(cellHtml, "<.*?>", string.Empty);
+                    thisTrans.salesID = rawString.Trim();
+
+                    // get rate type
+                    cellHtml = "<td" + cells[6];
+                    rawString = Regex.Replace(cellHtml, "<.*?>", string.Empty);
+                    thisTrans.rateType = rawString.Trim();
+
+                    // get platform ID
+                    cellHtml = "<td" + cells[7];
+                    rawString = Regex.Replace(cellHtml, "<.*?>", string.Empty);
+                    thisTrans.platform = rawString.Trim();
+
+                    // get batch ID
+                    cellHtml = "<td" + cells[8];
+                    rawString = Regex.Replace(cellHtml, "<.*?>", string.Empty);
+                    thisTrans.batchID = rawString.Trim();
+
+                    // get control number
+                    cellHtml = "<td" + cells[9];
+                    rawString = Regex.Replace(cellHtml, "<.*?>", string.Empty);
+                    thisTrans.controlNumber = rawString.Trim();
+
+                    // get RQ invoice number entered by rep
+                    cellHtml = "<td" + cells[10];
+                    rawString = Regex.Replace(cellHtml, "<.*?>", string.Empty);
+                    thisTrans.invoiceNumber = rawString.Trim();
+
+                    // get payment amount
+                    cellHtml = "<td" + cells[11];
+                    rawString = Regex.Replace(cellHtml, "<.*?>", string.Empty);
+                    thisTrans.paymentAmount = Convert.ToDecimal(rawString.Trim());
+
+                    // transcation fee
+                    cellHtml = "<td" + cells[12];
+                    rawString = Regex.Replace(cellHtml, "<.*?>", string.Empty);
+                    thisTrans.transFee = Convert.ToDecimal(rawString.Trim());
+
+                    // debit amount
+                    cellHtml = "<td" + cells[13];
+                    rawString = Regex.Replace(cellHtml, "<.*?>", string.Empty);
+                    thisTrans.debitAmount = Convert.ToDecimal(rawString.Trim());
+
+                    datascape.transactions.Add(thisTrans);
+                }
+                else // not a transaction row
+                {
+                    // check whether this row contains total amount
+                    if (row.Contains("has the following datascape transactions totaling"))
+                    {
+                        string amountString = row.Substring(row.IndexOf("$") + 1);
+                        amountString = amountString.Substring(0, amountString.IndexOf(".") + 3);
+                        amountString = Regex.Replace(amountString, "'", string.Empty);
+                        datascape.totalAmount = Convert.ToDecimal(amountString);
+                    }
+                }
+            }
+
+            return datascape;
+        }
+
 
         // check whether the subject and message indicate a Datascape email
-        private bool isDatascapeEmail(String subject, string message)
+        public bool isDatascapeEmail(String subject, string message)
         {
             if (subject.Contains("Datascape Notification")
                 && message.Contains("ATI has the following datascape transactions totaling")
@@ -277,13 +420,22 @@ namespace bogart_wireless.Models
             loadAndMatch();
         }
 
+        public void reconcileClient(Client client)
+        {
+            loadAndMatch(client);
+        }
 
-        public int loadRQDatascapeTransactions()
+        public int loadRQDatascapeTransactions(Client client = null)
         {
             int numSets = 0;
+            String schema = "bogart_2";
 
+            if (client != null)
+            {
+                schema = client.schema;
+            }
             // get info on email transactions that have not been reconciled
-            string queryString = "Select drr.DRRID, idr.RQStoreID, drr.TransactionStartDate, drr.TransactionEndDate from bogart_2.DatascapeReconRecord drr, bogart_2.Stores idr where drr.ATIStoreID = idr.WZNumber and drr.Reconciled=0 and drr.DRRID not in (Select DRRID from bogart_2.RQDatascapeTransactions)";
+            string queryString = "Select drr.DRRID, idr.RQStoreID, drr.TransactionStartDate, drr.TransactionEndDate from " + schema + ".DatascapeReconRecord drr, bogart_2.Stores idr where drr.ATIStoreID = idr.WZNumber and drr.Reconciled=0 and drr.DRRID not in (Select DRRID from " + schema + ".RQDatascapeTransactions)";
 
             // Execute the query
             SqlCommand command = new SqlCommand(queryString, connection);
@@ -302,7 +454,7 @@ namespace bogart_wireless.Models
                     DateTime transEndDate = reader.GetDateTime(3);
 
                     // check whether we have RQ data for that date range
-                    queryString = "Select SoldOn from bogart_2.productdetails where InvoicedAt = '" + RQStoreID + "' and SoldOn >= '" + transEndDate.ToString("d") + "'";
+                    queryString = "Select SoldOn from " + schema + ".productdetails where InvoicedAt = '" + RQStoreID + "' and SoldOn >= '" + transEndDate.ToString("d") + "'";
                     SqlCommand command2 = new SqlCommand(queryString, connection);
                     command2.CommandTimeout = 60;
                     SqlDataReader reader2 = command2.ExecuteReader();
@@ -313,7 +465,7 @@ namespace bogart_wireless.Models
                         // pull the data from productdetails into RQDatascapeTransactions
                         reader2.Close();
                         DateTime endDate = transEndDate.AddDays(1);
-                        queryString = "Insert into bogart_2.RQDatascapeTransactions (DRRID, SoldOn, InvoiceNo, SoldBy, Description, SoldFor, MobileNumber) Select " + DRRID + ", SoldOn, InvoiceNo, SoldBy, Description, AdjustedUnitPrice, TrackingNo from bogart_2.productdetails where InvoicedAt = '" + RQStoreID + "' and SoldOn >= '" + transStartDate + "' and SoldOn < '" + endDate + "' and Category Like '>> Bill Payment%' and Description in (Select Distinct RQTransType From bogart_2.DatascapeTransTypeMatches)";
+                        queryString = "Insert into " + schema + ".RQDatascapeTransactions (DRRID, SoldOn, InvoiceNo, SoldBy, Description, SoldFor, MobileNumber) Select " + DRRID + ", SoldOn, InvoiceNo, SoldBy, Description, AdjustedUnitPrice, TrackingNo from " + schema + ".productdetails where InvoicedAt = '" + RQStoreID + "' and SoldOn >= '" + transStartDate + "' and SoldOn < '" + endDate + "' and Category Like '>> Bill Payment%' and Description in (Select Distinct RQTransType From bogart_2.DatascapeTransTypeMatches)";
                         command2.CommandText = queryString;
                         reader2 = command2.ExecuteReader();
                     }
@@ -338,7 +490,7 @@ namespace bogart_wireless.Models
 
         }
 
-        public int matchDatascapeTransactions()
+        public int matchDatascapeTransactions(Client client = null)
         {
             int numBatches = 0;
             Int32 DRRID = 0;
@@ -347,9 +499,15 @@ namespace bogart_wireless.Models
             String queryString;
             String insertSQL;
             String partialMsg;
+            String schema = "bogart_2";
+
+            if (client != null)
+            {
+                schema = client.schema;
+            }
 
             // find datascape batches that have not been reconciled 
-            queryString = "Select DRRID, ATIStoreID, DateATIReportReceived, TransactionStartDate, TransactionEndDate, ATIAmount from bogart_2.DatascapeReconRecord drr where Reconciled = 0 and EXISTS (Select * from bogart_2.RQDatascapeTransactions where DRRID = drr.DRRID)";
+            queryString = "Select DRRID, ATIStoreID, DateATIReportReceived, TransactionStartDate, TransactionEndDate, ATIAmount from " + schema + ".DatascapeReconRecord drr where Reconciled = 0 and EXISTS (Select * from " + schema + ".RQDatascapeTransactions where DRRID = drr.DRRID)";
             SqlCommand command = new SqlCommand(queryString, connection);
             SqlDataReader reader = command.ExecuteReader();
 
@@ -360,7 +518,7 @@ namespace bogart_wireless.Models
 
                 // pull records from RQDatascapeTransactions
                 DRRID = reader.GetInt32(0);
-                queryString = "Select RQDTID,SoldOn, InvoiceNo, SoldBy, Description, SoldFor, MobileNumber from bogart_2.RQDatascapeTransactions where DRRID = " + DRRID;
+                queryString = "Select RQDTID,SoldOn, InvoiceNo, SoldBy, Description, SoldFor, MobileNumber from " + schema + ".RQDatascapeTransactions where DRRID = " + DRRID;
                 SqlCommand commandRQ = new SqlCommand(queryString, connection);
                 SqlDataReader readerRQ = commandRQ.ExecuteReader();
 
@@ -373,7 +531,7 @@ namespace bogart_wireless.Models
                     String mobileNumber = readerRQ.GetString(6);
                     DateTime soldOn = readerRQ.GetDateTime(1).Date;
                     Decimal paymentAmount = readerRQ.GetDecimal(5);
-                    queryString = "Select ADTID from bogart_2.DatascapeEmailTransactions adt, bogart_2.DatascapeTransTypeMatches dttm where dttm.DatascapeTransType = adt.DatascapeTransType and dttm.RQTransType = '" + transType + "' and DRRID = " + DRRID + " and MobileNumber = '" + mobileNumber + "' and DateIn = '" + soldOn.ToString("d") + "' and PaymentAmount = " + paymentAmount.ToString() + " and not exists (select * from bogart_2.DatascapeTransMatch where ADTID = adt.ADTID)";
+                    queryString = "Select ADTID from " + schema + ".DatascapeEmailTransactions adt, bogart_2.DatascapeTransTypeMatches dttm where dttm.DatascapeTransType = adt.DatascapeTransType and dttm.RQTransType = '" + transType + "' and DRRID = " + DRRID + " and MobileNumber = '" + mobileNumber + "' and DateIn = '" + soldOn.ToString("d") + "' and PaymentAmount = " + paymentAmount.ToString() + " and not exists (select * from " + schema + ".DatascapeTransMatch where ADTID = adt.ADTID)";
                     SqlCommand command2 = new SqlCommand(queryString, connection);
                     SqlDataReader reader2 = command2.ExecuteReader();
 
@@ -383,7 +541,7 @@ namespace bogart_wireless.Models
                         // add record to DatascapeTransMatch
                         reader2.Read();
                         ADTID = reader2.GetInt32(0);
-                        insertSQL = "Insert into bogart_2.DatascapeTransMatch (RQDTID, ADTID, Partial) values (" + RQDTID + "," + ADTID + ", 0)";
+                        insertSQL = "Insert into " + schema + ".DatascapeTransMatch (RQDTID, ADTID, Partial) values (" + RQDTID + "," + ADTID + ", 0)";
                         executeNonQuery(insertSQL);
 
                     }
@@ -392,7 +550,7 @@ namespace bogart_wireless.Models
                 readerRQ.Close();
 
                 // perform another loop of unmatched records to search for partial matches
-                queryString = "Select RQDTID,SoldOn, InvoiceNo, SoldBy, Description, SoldFor, MobileNumber from bogart_2.RQDatascapeTransactions rdt where DRRID = " + DRRID + "and not exists(select ACTMID from bogart_2.DatascapeTransMatch where RQDTID = rdt.RQDTID)";
+                queryString = "Select RQDTID,SoldOn, InvoiceNo, SoldBy, Description, SoldFor, MobileNumber from " + schema + ".RQDatascapeTransactions rdt where DRRID = " + DRRID + "and not exists(select ACTMID from " + schema + ".DatascapeTransMatch where RQDTID = rdt.RQDTID)";
                 commandRQ.CommandText = queryString; 
                 readerRQ = commandRQ.ExecuteReader();
                 while (readerRQ.Read())
@@ -406,7 +564,7 @@ namespace bogart_wireless.Models
                     Decimal paymentAmount = readerRQ.GetDecimal(5);
 
                     // pull all unmatched email transactions to check for a partial match to this one
-                    queryString = "Select ADTID, DRRID, DatascapeTransType, DateIn, AgentID, MobileNumber, SalesID, RateType, Platform, BatchID, ControlNumber, Invoice, PaymentAmount, TransFee, DebitAmount from bogart_2.DatascapeEmailTransactions adt where DRRID = " + DRRID + " and not exists (select ACTMID from bogart_2.DatascapeTransMatch where ADTID = adt.ADTID)";
+                    queryString = "Select ADTID, DRRID, DatascapeTransType, DateIn, AgentID, MobileNumber, SalesID, RateType, Platform, BatchID, ControlNumber, Invoice, PaymentAmount, TransFee, DebitAmount from " + schema + ".DatascapeEmailTransactions adt where DRRID = " + DRRID + " and not exists (select ACTMID from " + schema + ".DatascapeTransMatch where ADTID = adt.ADTID)";
                     SqlCommand command3 = new SqlCommand(queryString, connection);
                     SqlDataReader reader3 = command3.ExecuteReader();
 
@@ -441,7 +599,7 @@ namespace bogart_wireless.Models
                         if (partialMsg != "")
                         {
                             // add a record to DatascapeTransMatch
-                            insertSQL = "Insert into bogart_2.DatascapeTransMatch (RQDTID, ADTID, Partial, MatchNote) values (" + RQDTID + "," + ADTID + ", 1, '" + partialMsg + "')";
+                            insertSQL = "Insert into " + schema + ".DatascapeTransMatch (RQDTID, ADTID, Partial, MatchNote) values (" + RQDTID + "," + ADTID + ", 1, '" + partialMsg + "')";
                             executeNonQuery(insertSQL);
                             break;
                         }
@@ -452,7 +610,7 @@ namespace bogart_wireless.Models
                             if (emailMobileNumber == mobileNumber && transTypeMatch(emailTransType, transType) && emailAmount != paymentAmount)
                             {
                                 partialMsg = "Amounts do not match";
-                                queryString = "Insert into bogart_2.DatascapeTransMatch (RQDTID, ADTID, Partial, MatchNote) values (" + RQDTID + "," + ADTID + ", 1, '" + partialMsg + "')";
+                                queryString = "Insert into " + schema + ".DatascapeTransMatch (RQDTID, ADTID, Partial, MatchNote) values (" + RQDTID + "," + ADTID + ", 1, '" + partialMsg + "')";
                                 executeNonQuery(queryString);
                             }
                         }
@@ -461,7 +619,7 @@ namespace bogart_wireless.Models
                 }
 
                 // update the reconciled flag
-                String updateSQL = "Update bogart_2.DatascapeReconRecord set reconciled = 1 where DRRID = '" + DRRID.ToString() + "'";
+                String updateSQL = "Update " + schema + ".DatascapeReconRecord set reconciled = 1 where DRRID = '" + DRRID.ToString() + "'";
                 executeNonQuery(updateSQL);
 
 
@@ -471,7 +629,7 @@ namespace bogart_wireless.Models
 
 
                 //Partial matches
-                queryString = "SELECT RQDTID, ADTID, Partial, MatchNote FROM bogart_2.DatascapeTransMatch WHERE Partial = 1 AND RQDTID IN (SELECT RQDTID FROM bogart_2.RQDatascapeTransactions WHERE DRRID = " + DRRID + ")";
+                queryString = "SELECT RQDTID, ADTID, Partial, MatchNote FROM " + schema + ".DatascapeTransMatch WHERE Partial = 1 AND RQDTID IN (SELECT RQDTID FROM " + schema + ".RQDatascapeTransactions WHERE DRRID = " + DRRID + ")";
 
                 SqlCommand commandIssues = new SqlCommand(queryString, connection);
                 SqlDataReader readerIssues = commandIssues.ExecuteReader();
@@ -484,21 +642,21 @@ namespace bogart_wireless.Models
                     String matchNote = readerIssues.GetString(3);
 
                     insertSQL =
-                        "INSERT INTO bogart_2.DatascapeReconciliationIssues (DRRID,IssueType, ADTID, ATIInvoice, ATIMobileNumber,ATITransactionDate, " +
+                        "INSERT INTO " + schema + ".DatascapeReconciliationIssues (DRRID,IssueType, ADTID, ATIInvoice, ATIMobileNumber,ATITransactionDate, " +
                         "ATITransactionType, ATIRep, ATIAmount, RQDTID, RQInvoice, RQMobileNumber, RQTransactionDate, RQTransactionType, " +
                         "RQRep, RQAmount, MatchNote) Values (" + DRRID + ",'Partial Match'," + ID + "," +
-                        "(SELECT Invoice FROM bogart_2.DatascapeEmailTransactions WHERE ADTID = " + ID + ")," +
-                        "(SELECT MobileNumber FROM bogart_2.DatascapeEmailTransactions WHERE ADTID = " + ID + ")," +
-                        "(SELECT DateIn FROM bogart_2.DatascapeEmailTransactions WHERE ADTID = " + ID + ")," +
-                        "(SELECT DatascapeTransType FROM bogart_2.DatascapeEmailTransactions WHERE ADTID = " + ID + ")," +
-                        "(SELECT SalesID FROM bogart_2.DatascapeEmailTransactions WHERE ADTID = " + ID + ")," +
-                        "(SELECT PaymentAmount FROM bogart_2.DatascapeEmailTransactions WHERE ADTID = " + ID + ")," + RQDTID2 + "," +
-                        "(SELECT InvoiceNo FROM bogart_2.RQDatascapeTransactions WHERE RQDTID = " + RQDTID2 + ")," +
-                        "(SELECT MobileNumber FROM bogart_2.RQDatascapeTransactions WHERE RQDTID = " + RQDTID2 + ")," +
-                        "(SELECT SoldOn FROM bogart_2.RQDatascapeTransactions WHERE RQDTID = " + RQDTID2 + ")," +
-                        "(SELECT Description FROM bogart_2.RQDatascapeTransactions WHERE RQDTID = " + RQDTID2 + ")," +
-                        "(SELECT SoldBy FROM bogart_2.RQDatascapeTransactions WHERE RQDTID = " + RQDTID2 + ")," +
-                        "(SELECT SoldFor FROM bogart_2.RQDatascapeTransactions WHERE RQDTID = " + RQDTID2 + ")," +
+                        "(SELECT Invoice FROM " + schema + ".DatascapeEmailTransactions WHERE ADTID = " + ID + ")," +
+                        "(SELECT MobileNumber FROM " + schema + ".DatascapeEmailTransactions WHERE ADTID = " + ID + ")," +
+                        "(SELECT DateIn FROM " + schema + ".DatascapeEmailTransactions WHERE ADTID = " + ID + ")," +
+                        "(SELECT DatascapeTransType FROM " + schema + ".DatascapeEmailTransactions WHERE ADTID = " + ID + ")," +
+                        "(SELECT SalesID FROM " + schema + ".DatascapeEmailTransactions WHERE ADTID = " + ID + ")," +
+                        "(SELECT PaymentAmount FROM " + schema + ".DatascapeEmailTransactions WHERE ADTID = " + ID + ")," + RQDTID2 + "," +
+                        "(SELECT InvoiceNo FROM " + schema + ".RQDatascapeTransactions WHERE RQDTID = " + RQDTID2 + ")," +
+                        "(SELECT MobileNumber FROM " + schema + ".RQDatascapeTransactions WHERE RQDTID = " + RQDTID2 + ")," +
+                        "(SELECT SoldOn FROM " + schema + ".RQDatascapeTransactions WHERE RQDTID = " + RQDTID2 + ")," +
+                        "(SELECT Description FROM " + schema + ".RQDatascapeTransactions WHERE RQDTID = " + RQDTID2 + ")," +
+                        "(SELECT SoldBy FROM " + schema + ".RQDatascapeTransactions WHERE RQDTID = " + RQDTID2 + ")," +
+                        "(SELECT SoldFor FROM " + schema + ".RQDatascapeTransactions WHERE RQDTID = " + RQDTID2 + ")," +
                         "'" + matchNote + "')";
                     executeNonQuery(insertSQL);
 
@@ -506,7 +664,7 @@ namespace bogart_wireless.Models
                 readerIssues.Close();
 
                 //Unmatched email records
-                queryString = "SELECT ADTID, DRRID, DatascapeTransType, DateIn, AgentID, MobileNumber, SalesID, RateType, Platform, BatchID, ControlNumber, Invoice, PaymentAmount, TransFee, DebitAmount  FROM bogart_2.DatascapeEmailTransactions WHERE DRRID = " + DRRID + " AND ADTID NOT IN (SELECT ADTID FROM bogart_2.DatascapeTransMatch)";
+                queryString = "SELECT ADTID, DRRID, DatascapeTransType, DateIn, AgentID, MobileNumber, SalesID, RateType, Platform, BatchID, ControlNumber, Invoice, PaymentAmount, TransFee, DebitAmount  FROM " + schema + ".DatascapeEmailTransactions WHERE DRRID = " + DRRID + " AND ADTID NOT IN (SELECT ADTID FROM " + schema + ".DatascapeTransMatch)";
                 commandIssues.CommandText = queryString;
                 readerIssues = commandIssues.ExecuteReader();
                 while (readerIssues.Read())
@@ -514,15 +672,15 @@ namespace bogart_wireless.Models
 
                     issuesFound = true;
                     Int32 ID = readerIssues.GetInt32(0);
-                    insertSQL = "INSERT INTO bogart_2.DatascapeReconciliationIssues (DRRID, IssueType, ADTID, ATIInvoice, ATIMobileNumber, ATITransactionDate, " +
+                    insertSQL = "INSERT INTO " + schema + ".DatascapeReconciliationIssues (DRRID, IssueType, ADTID, ATIInvoice, ATIMobileNumber, ATITransactionDate, " +
                                 "ATITransactionType, ATIRep, ATIAmount, MatchNote) Values (" +
                                 DRRID + ", 'Not in RQ', " + ID + ", " +
-                        "(SELECT Invoice FROM  bogart_2.DatascapeEmailTransactions WHERE ADTID = " + ID + ")," +
-                        "(SELECT MobileNumber FROM  bogart_2.DatascapeEmailTransactions WHERE ADTID = " + ID + ")," +
-                        "(SELECT DateIn FROM  bogart_2.DatascapeEmailTransactions WHERE  ADTID = " + ID + ")," +
-                        "(SELECT DatascapeTransType FROM  bogart_2.DatascapeEmailTransactions WHERE  ADTID = " + ID + ")," +
-                        "(SELECT SalesID FROM  bogart_2.DatascapeEmailTransactions WHERE  ADTID = " + ID + ")," +
-                        "(SELECT PaymentAmount FROM  bogart_2.DatascapeEmailTransactions WHERE ADTID = " + ID + ")," +
+                        "(SELECT Invoice FROM  " + schema + ".DatascapeEmailTransactions WHERE ADTID = " + ID + ")," +
+                        "(SELECT MobileNumber FROM  " + schema + ".DatascapeEmailTransactions WHERE ADTID = " + ID + ")," +
+                        "(SELECT DateIn FROM  " + schema + ".DatascapeEmailTransactions WHERE  ADTID = " + ID + ")," +
+                        "(SELECT DatascapeTransType FROM  " + schema + ".DatascapeEmailTransactions WHERE  ADTID = " + ID + ")," +
+                        "(SELECT SalesID FROM  " + schema + ".DatascapeEmailTransactions WHERE  ADTID = " + ID + ")," +
+                        "(SELECT PaymentAmount FROM  " + schema + ".DatascapeEmailTransactions WHERE ADTID = " + ID + ")," +
                         "'Not in RQ')";
                     executeNonQuery(insertSQL);
 
@@ -530,7 +688,7 @@ namespace bogart_wireless.Models
                 readerIssues.Close();
 
                 //RQ records not in Email  Report
-                queryString = "SELECT RQDTID FROM bogart_2.RQDatascapeTransactions WHERE DRRID = " + DRRID + " AND RQDTID NOT IN (SELECT RQDTID FROM bogart_2.DatascapeTransMatch)";
+                queryString = "SELECT RQDTID FROM " + schema + ".RQDatascapeTransactions WHERE DRRID = " + DRRID + " AND RQDTID NOT IN (SELECT RQDTID FROM " + schema + ".DatascapeTransMatch)";
                 commandIssues.CommandText = queryString;
                 readerIssues = commandIssues.ExecuteReader();
                 while (readerIssues.Read())
@@ -539,14 +697,14 @@ namespace bogart_wireless.Models
                     issuesFound = true;
                     Int32 ID = readerIssues.GetInt32(0);
 
-                    insertSQL = "INSERT INTO bogart_2.DatascapeReconciliationIssues (DRRID, IssueType, RQDTID, RQInvoice , RQMobileNumber, " +
+                    insertSQL = "INSERT INTO " + schema + ".DatascapeReconciliationIssues (DRRID, IssueType, RQDTID, RQInvoice , RQMobileNumber, " +
                         "RQTransactionDate, RQTransactionType, RQRep, RQAmount, MatchNote) Values (" + DRRID + ", 'Not in Email Report', " + ID + "," +
-                        "(SELECT InvoiceNo FROM bogart_2.RQDatascapeTransactions WHERE RQDTID = " + ID + ")," +
-                        "(SELECT MobileNumber FROM bogart_2.RQDatascapeTransactions WHERE RQDTID = " + ID + ")," +
-                        "(SELECT SoldOn FROM bogart_2.RQDatascapeTransactions WHERE RQDTID = " + ID + ")," +
-                        "(SELECT Description FROM bogart_2.RQDatascapeTransactions WHERE RQDTID = " + ID + ")," +
-                        "(SELECT SoldBy FROM bogart_2.RQDatascapeTransactions WHERE RQDTID = " + ID + ")," +
-                        "(SELECT SoldFor FROM bogart_2.RQDatascapeTransactions WHERE RQDTID = " + ID + ")," +
+                        "(SELECT InvoiceNo FROM " + schema + ".RQDatascapeTransactions WHERE RQDTID = " + ID + ")," +
+                        "(SELECT MobileNumber FROM " + schema + ".RQDatascapeTransactions WHERE RQDTID = " + ID + ")," +
+                        "(SELECT SoldOn FROM " + schema + ".RQDatascapeTransactions WHERE RQDTID = " + ID + ")," +
+                        "(SELECT Description FROM " + schema + ".RQDatascapeTransactions WHERE RQDTID = " + ID + ")," +
+                        "(SELECT SoldBy FROM " + schema + ".RQDatascapeTransactions WHERE RQDTID = " + ID + ")," +
+                        "(SELECT SoldFor FROM " + schema + ".RQDatascapeTransactions WHERE RQDTID = " + ID + ")," +
                         "'Not in Email Report')";
                     executeNonQuery(insertSQL);
 
@@ -767,7 +925,7 @@ namespace bogart_wireless.Models
             return numBatches;
 
         }
-        public void sendDatascapeReports()
+        public void sendDatascapeReports(Client client = null)
         {
             String emailInvoice;
             String RQInvoice;
@@ -782,9 +940,22 @@ namespace bogart_wireless.Models
             String MatchNote;
             String emailAmount;
             String RQAmount;
+            String schema = "bogart_2";
+            EmailConfiguration clientEmailConfiguration = (EmailConfiguration)  Datascape.emailConfiguration;
+
+            if (client != null)
+            {
+                schema = client.schema;
+                clientEmailConfiguration.PopUsername = client.incomingEmail;
+                clientEmailConfiguration.PopPassword = client.emailPassword;
+                clientEmailConfiguration.SmtpUsername = client.incomingEmail;
+                clientEmailConfiguration.SmtpPassword = client.emailPassword;
+                clientEmailConfiguration.IMAPUsername = client.incomingEmail;
+                clientEmailConfiguration.IMAPPassword = client.emailPassword;
+            }
 
             // get list of reconciled batches not yet reported
-            String queryString = "SELECT DRRID, ATIStoreID, DateATIReportReceived, TransactionStartDate, TransactionEndDate, ATIAmount, Reconciled, AmountOK FROM bogart_2.DatascapeReconRecord WHERE Reconciled = 1 and Reported = 0";
+            String queryString = "SELECT DRRID, ATIStoreID, DateATIReportReceived, TransactionStartDate, TransactionEndDate, ATIAmount, Reconciled, AmountOK FROM " + schema + ".DatascapeReconRecord WHERE Reconciled = 1 and Reported = 0";
             SqlCommand command = new SqlCommand(queryString, connection);
             SqlDataReader reader = command.ExecuteReader();
 
@@ -809,7 +980,7 @@ namespace bogart_wireless.Models
                 message += "<table>";
 
                 // check whether any issues exist
-                String issueQuery = "SELECT ATIInvoice, RQInvoice, ATIMobileNumber, RQMobileNumber, ATITransactionDate, RQTransactionDate, ATITransactionType, RQTransactionType, ATIRep, RQRep, ATIAmount, RQAmount, MatchNote FROM bogart_2.DatascapeReconciliationIssues WHERE DRRID = " + DRRID;
+                String issueQuery = "SELECT ATIInvoice, RQInvoice, ATIMobileNumber, RQMobileNumber, ATITransactionDate, RQTransactionDate, ATITransactionType, RQTransactionType, ATIRep, RQRep, ATIAmount, RQAmount, MatchNote FROM " + schema + ".DatascapeReconciliationIssues WHERE DRRID = " + DRRID;
                 SqlCommand issueCommand = new SqlCommand(issueQuery, connection);
                 SqlDataReader issueReader = issueCommand.ExecuteReader();
                     int issueCount = 0;
@@ -852,7 +1023,7 @@ namespace bogart_wireless.Models
                 message += "</table></body></html>";
 
                 // send a report email
-                EmailService emailService = new EmailService(Datascape.emailConfiguration);
+                EmailService emailService = new EmailService(clientEmailConfiguration);
 
                 // new method for using trable-driven email lists
                 EmailList emailList = new EmailList();
@@ -860,7 +1031,7 @@ namespace bogart_wireless.Models
                 emailService.QuickSend(emailSubject, message, emails);
 
                 // update DatascapeReconRecord
-                String updateSQL = "Update bogart_2.datascapeReconRecord set Reported = 1 where DRRID = " + DRRID;
+                String updateSQL = "Update " + schema + ".datascapeReconRecord set Reported = 1 where DRRID = " + DRRID;
                 executeNonQuery(updateSQL);
             }
         }
@@ -984,7 +1155,7 @@ namespace bogart_wireless.Models
 
         }
 
-     
+
         private void executeNonQuery(String queryString)
         {
             // Execute the query  
