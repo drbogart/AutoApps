@@ -18,9 +18,11 @@ namespace bogart_wireless.Controllers
         {
             _configuration = configuration.Get("ReportFiles");
             Datascape.emailConfiguration = configuration.Get("Datascape");
+            Datascape.clientEmailConfiguration = configuration.Get("ExternalClients");
             Datascape.dbSettings = dbsettings.Value;
             Datascape.generalSettings = generalSettings.Value;
             SalesData.emailConfiguration = configuration.Get("ReportFiles");
+            SalesData.clientEmailConfiguration = configuration.Get("ExternalClients");
             SalesData.dbSettings = dbsettings.Value;
             SalesData.generalSettings = generalSettings.Value;
             Payroll.generalSettings = generalSettings.Value;
@@ -125,9 +127,20 @@ namespace bogart_wireless.Controllers
         {
             SalesData salesData = new SalesData();
             int numClients = salesData.processExternalClientData();
-            ViewBag.Message = "Processed " + numClients + " client";
+            ViewBag.Message = "Processed " + numClients + " client emails";
             return View("Done");
         }
 
+        
+
+        public IActionResult processExternalClientsDatascapeReconcileOnly()
+        {
+            Client client = new Client();
+            client.name = "Hershel Martin";
+            client.schema = "martin";
+            Datascape datascape = new Datascape();
+            datascape.reconcileClient(client);
+            return View("Done");
+        }
     }
 }

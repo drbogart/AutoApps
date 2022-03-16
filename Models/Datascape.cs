@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using bogart_wireless.Libraries;
+using ExcelDataReader;
 using Microsoft.Data.SqlClient;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using bogart_wireless.Libraries;
-using ExcelDataReader;
-using System.IO;
-using System.Collections;
 
 namespace bogart_wireless.Models
 {
@@ -18,6 +18,7 @@ namespace bogart_wireless.Models
 
         // static configuration data that applies to all objects of this type
         public static IEmailConfiguration emailConfiguration; // for email
+        public static IEmailConfiguration clientEmailConfiguration; // for email
         public static List<string> emailList = new List<string>();
         public static DatabaseConnectionSettings dbSettings; // for database connection
         public static GeneralSettings generalSettings; 
@@ -435,7 +436,7 @@ namespace bogart_wireless.Models
                 schema = client.schema;
             }
             // get info on email transactions that have not been reconciled
-            string queryString = "Select drr.DRRID, idr.RQStoreID, drr.TransactionStartDate, drr.TransactionEndDate from " + schema + ".DatascapeReconRecord drr, bogart_2.Stores idr where drr.ATIStoreID = idr.WZNumber and drr.Reconciled=0 and drr.DRRID not in (Select DRRID from " + schema + ".RQDatascapeTransactions)";
+            string queryString = "Select drr.DRRID, idr.RQStoreID, drr.TransactionStartDate, drr.TransactionEndDate from " + schema + ".DatascapeReconRecord drr, clients.Stores idr where drr.ATIStoreID = idr.WZNumber and drr.Reconciled=0 and drr.DRRID not in (Select DRRID from " + schema + ".RQDatascapeTransactions)";
 
             // Execute the query
             SqlCommand command = new SqlCommand(queryString, connection);
@@ -941,17 +942,12 @@ namespace bogart_wireless.Models
             String emailAmount;
             String RQAmount;
             String schema = "bogart_2";
-            EmailConfiguration clientEmailConfiguration = (EmailConfiguration)  Datascape.emailConfiguration;
+
 
             if (client != null)
             {
                 schema = client.schema;
-                clientEmailConfiguration.PopUsername = client.incomingEmail;
-                clientEmailConfiguration.PopPassword = client.emailPassword;
-                clientEmailConfiguration.SmtpUsername = client.incomingEmail;
-                clientEmailConfiguration.SmtpPassword = client.emailPassword;
-                clientEmailConfiguration.IMAPUsername = client.incomingEmail;
-                clientEmailConfiguration.IMAPPassword = client.emailPassword;
+
             }
 
             // get list of reconciled batches not yet reported

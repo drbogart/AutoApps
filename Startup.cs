@@ -38,6 +38,7 @@ namespace AutoApps
 
             services.Configure<EmailConfiguration>("ReportFiles", Configuration.GetSection("EmailConfiguration:ReportFiles"));
             services.Configure<EmailConfiguration>("Datascape", Configuration.GetSection("EmailConfiguration:Datascape"));
+            services.Configure<EmailConfiguration>("ExternalClients", Configuration.GetSection("EmailConfiguration:ExternalClients"));
             services.Configure<DatabaseConnectionSettings>(options => Configuration.GetSection("DatabaseConnectionSettings").Bind(options));
             services.Configure<GeneralSettings>(options => Configuration.GetSection("General").Bind(options));
         
