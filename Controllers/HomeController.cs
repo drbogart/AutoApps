@@ -5,7 +5,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using AutoApps.Models;
-
+/*
+using Google.Apis.Auth.AspNetCore;
+using Google.Apis.Auth.OAuth2;
+using Google.Apis.Services;
+using Google.Apis.Gmail.v1;
+*/
 namespace AutoApps.Controllers
 {
     public class HomeController : Controller
@@ -26,4 +31,7 @@ namespace AutoApps.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
+
+
+
 }
