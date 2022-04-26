@@ -8,6 +8,16 @@
     <Compile Remove="Models\SalesData.cs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="Copy of Sales by Product Report From 05-Apr-2022 To 05-Apr-2022 113853.xls" />
+    <None Remove="Copy of Sales by Product Report From 05-Apr-2022 To 05-Apr-2022 161652.xls" />
+    <None Remove="Copy of Sales by Product Report From 06-Apr-2022 To 06-Apr-2022 101555.xls" />
+    <None Remove="Copy of Sales by Product Report From 06-Apr-2022 To 06-Apr-2022 161842.xls" />
+    <None Remove="Copy of Sales by Product Report From 07-Apr-2022 To 07-Apr-2022 162003.xls" />
+    <None Remove="Copy of Sales by Product Report From 08-Apr-2022 To 08-Apr-2022 134943.xls" />
+    <None Remove="Copy of Sales by Product Report From 09-Apr-2022 To 09-Apr-2022 101733.xls" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <PackageReference Include="ExcelDataReader" Version="3.6.0" />
