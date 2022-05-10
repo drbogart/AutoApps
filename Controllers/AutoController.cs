@@ -3,7 +3,27 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using AutoApps.Models;
 using bogart_wireless.Libraries;
+using System.Security.Cryptography.X509Certificates;
+using Google.Apis.Auth.OAuth2;
+using System.IO;
+using Google.Apis.Auth.OAuth2.Flows;
+using Google.Apis.Util.Store;
+using System.Threading;
+using Google.Apis.Util;
+using System.Threading.Tasks;
 
+
+using Google.Apis.Services;
+using Google.Apis.Gmail.v1;
+using Google.Apis.Gmail.v1.Data;
+using System.Collections.Generic;
+
+using Google.Apis.Auth.OAuth2.Mvc;
+using MailKit.Security;
+using MailKit.Net.Smtp;
+using MimeKit;
+using MimeKit.Text;
+using System.Text;
 
 
 namespace bogart_wireless.Controllers
@@ -13,7 +33,7 @@ namespace bogart_wireless.Controllers
     {
         readonly IEmailConfiguration _configuration; // for email
 
-        public AutoController(IOptionsSnapshot<EmailConfiguration> configuration, IOptions<DatabaseConnectionSettings> dbsettings, IOptions<GeneralSettings> generalSettings)
+        public AutoController(IOptionsSnapshot<EmailConfiguration> configuration, IOptions<DatabaseConnectionSettings> dbsettings, IOptions<GeneralSettings> generalSettings, IOptions<OAuth2Configuration> oauthSettings)
         {
             _configuration = configuration.Get("ReportFiles");
             Datascape.emailConfiguration = configuration.Get("Datascape");
@@ -32,6 +52,8 @@ namespace bogart_wireless.Controllers
             StyleMappings.dbSettings = dbsettings.Value;
             StyleMappings.generalSettings = generalSettings.Value;
             EmailList.dbSettings = dbsettings.Value;
+            OAuth2.authSettings = oauthSettings.Value;
+
 
         }
 
@@ -141,5 +163,14 @@ namespace bogart_wireless.Controllers
             datascape.reconcileClient(client);
             return View("Done");
         }
+
+        public async Task<IActionResult> testOAuthAsync()
+        {
+
+            OAuth2 oauth = new OAuth2("clients_dev@bogart-wireless.net");
+            List<MimeMessage> messages = oauth.ReceiveEmail(1);
+            return View("Done");
+        }
+
     }
 }
