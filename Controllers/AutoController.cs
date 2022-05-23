@@ -159,6 +159,7 @@ namespace bogart_wireless.Controllers
             Client client = new Client();
             client.name = "Hershel Martin";
             client.schema = "martin";
+            client.ownerID = 5;
             Datascape datascape = new Datascape();
             datascape.reconcileClient(client);
             return View("Done");
