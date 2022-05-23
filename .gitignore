@@ -344,3 +344,6 @@ healthchecksdb
 /temp/Sales by Product Report From 28-Mar-2021 To 28-Mar-2021 073230.xlsx
 /temp
 /DatascapeLedger.xlsx
+
+# Should never be pushed to public git repository
+gmail_credentials.json
