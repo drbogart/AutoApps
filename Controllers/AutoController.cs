@@ -41,6 +41,7 @@ namespace bogart_wireless.Controllers
             Datascape.dbSettings = dbsettings.Value;
             Datascape.generalSettings = generalSettings.Value;
             SalesData.emailConfiguration = configuration.Get("ReportFiles");
+            ProductDetailsData.emailConfiguration = configuration.Get("ReportFiles");
             SalesData.clientEmailConfiguration = configuration.Get("ExternalClients");
             SalesData.dbSettings = dbsettings.Value;
             SalesData.generalSettings = generalSettings.Value;
@@ -77,7 +78,7 @@ namespace bogart_wireless.Controllers
             if (numEmails > 0)
             {
                 ProductDetailsData pd = new ProductDetailsData();
-                pd.loadDailyDashboard();
+                pd.newLoadDailyDashboard();
                 ViewBag.Message += "; Loaded DailyDashboard";
 
 
@@ -160,7 +161,7 @@ namespace bogart_wireless.Controllers
             return View("Done");
         }
 
-        
+
 
         public IActionResult processExternalClientsDatascapeReconcileOnly()
         {
@@ -181,5 +182,16 @@ namespace bogart_wireless.Controllers
             return View("Done");
         }
 
+        public IActionResult testFunc()
+        {
+
+            ProductDetailsData pd = new ProductDetailsData();
+            pd.createCacheTables();
+            DateTime startDate = Convert.ToDateTime("5/4/2022");
+            DateTime endDate = Convert.ToDateTime("6/2/2022");
+            int numRecs = pd.loadPDCache(startDate,endDate);
+            return View("Done");
+
+        }
     }
 }
