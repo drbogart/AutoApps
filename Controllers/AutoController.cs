@@ -184,12 +184,13 @@ namespace bogart_wireless.Controllers
 
         public IActionResult testFunc()
         {
-
+            String msg = "";
             ProductDetailsData pd = new ProductDetailsData();
             pd.createCacheTables();
             DateTime startDate = Convert.ToDateTime("5/4/2022");
             DateTime endDate = Convert.ToDateTime("6/2/2022");
             int numRecs = pd.loadPDCache(startDate,endDate);
+            ViewBag.Message = "Loaded " + numRecs + " records";
             return View("Done");
 
         }
