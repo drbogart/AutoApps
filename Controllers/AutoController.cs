@@ -24,7 +24,7 @@ using MailKit.Net.Smtp;
 using MimeKit;
 using MimeKit.Text;
 using System.Text;
-
+using Thread = System.Threading.Thread;
 
 namespace bogart_wireless.Controllers
 {
@@ -184,13 +184,30 @@ namespace bogart_wireless.Controllers
 
         public IActionResult testFunc()
         {
-            String msg = "";
-            ProductDetailsData pd = new ProductDetailsData();
-            pd.createCacheTables();
-            DateTime startDate = Convert.ToDateTime("5/4/2022");
-            DateTime endDate = Convert.ToDateTime("6/2/2022");
-            int numRecs = pd.loadPDCache(startDate,endDate);
-            ViewBag.Message = "Loaded " + numRecs + " records";
+            DateTime startTime = DateTime.Now;
+            TimeSpan elapsedTime = new TimeSpan();
+
+            try
+            {
+                Stream xstream = new FileStream(OAuth2.authSettings.credentialFile, FileMode.Open, FileAccess.Read, FileShare.Read);
+            }
+            catch (Exception e)
+            {
+                ViewBag.Message = e.Message;
+                return View("Done");
+            }
+            
+            int delayCount = 0;
+            
+            OAuth2 oauth = new OAuth2("clients_dev@bogart-wireless.net");
+            while (!oauth.Initiated)
+            {
+                Thread.Sleep(1000);
+                delayCount++;
+            }
+            
+            elapsedTime = DateTime.Now - startTime;
+            ViewBag.Message = "Waited " + delayCount + " ticks; " + elapsedTime.Minutes + " minutes " + elapsedTime.Seconds + " seconds";
             return View("Done");
 
         }
