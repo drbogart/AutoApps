@@ -347,3 +347,4 @@ healthchecksdb
 
 # Should never be pushed to public git repository
 gmail_credentials.json
+*.xlsx
