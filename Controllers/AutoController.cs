@@ -24,7 +24,7 @@ using MailKit.Net.Smtp;
 using MimeKit;
 using MimeKit.Text;
 using System.Text;
-
+using Thread = System.Threading.Thread;
 
 namespace bogart_wireless.Controllers
 {
@@ -41,6 +41,7 @@ namespace bogart_wireless.Controllers
             Datascape.dbSettings = dbsettings.Value;
             Datascape.generalSettings = generalSettings.Value;
             SalesData.emailConfiguration = configuration.Get("ReportFiles");
+            ProductDetailsData.emailConfiguration = configuration.Get("ReportFiles");
             SalesData.clientEmailConfiguration = configuration.Get("ExternalClients");
             SalesData.dbSettings = dbsettings.Value;
             SalesData.generalSettings = generalSettings.Value;
@@ -77,7 +78,7 @@ namespace bogart_wireless.Controllers
             if (numEmails > 0)
             {
                 ProductDetailsData pd = new ProductDetailsData();
-                pd.loadDailyDashboard();
+                pd.newLoadDailyDashboard();
                 ViewBag.Message += "; Loaded DailyDashboard";
 
 
@@ -136,6 +137,14 @@ namespace bogart_wireless.Controllers
 
         }
 
+        public IActionResult newDailyDashboard()
+        {
+            ProductDetailsData pd = new ProductDetailsData();
+            pd.newLoadDailyDashboard(true);
+            ViewBag.Message = "Daily Dashboard Loaded";
+            return View("Done");
+
+        }
         public IActionResult LoadDailyNeedsData()
         {
             ProductDetailsData pd = new ProductDetailsData();
@@ -152,7 +161,7 @@ namespace bogart_wireless.Controllers
             return View("Done");
         }
 
-        
+
 
         public IActionResult processExternalClientsDatascapeReconcileOnly()
         {
@@ -173,5 +182,34 @@ namespace bogart_wireless.Controllers
             return View("Done");
         }
 
+        public IActionResult testFunc()
+        {
+            DateTime startTime = DateTime.Now;
+            TimeSpan elapsedTime = new TimeSpan();
+
+            try
+            {
+                Stream xstream = new FileStream(OAuth2.authSettings.credentialFile, FileMode.Open, FileAccess.Read, FileShare.Read);
+            }
+            catch (Exception e)
+            {
+                ViewBag.Message = e.Message;
+                return View("Done");
+            }
+            
+            int delayCount = 0;
+            
+            OAuth2 oauth = new OAuth2("clients_dev@bogart-wireless.net");
+            while (!oauth.Initiated)
+            {
+                Thread.Sleep(1000);
+                delayCount++;
+            }
+            
+            elapsedTime = DateTime.Now - startTime;
+            ViewBag.Message = "Waited " + delayCount + " ticks; " + elapsedTime.Minutes + " minutes " + elapsedTime.Seconds + " seconds";
+            return View("Done");
+
+        }
     }
 }
