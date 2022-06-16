@@ -54,6 +54,8 @@ namespace bogart_wireless.Controllers
             StyleMappings.generalSettings = generalSettings.Value;
             EmailList.dbSettings = dbsettings.Value;
             OAuth2.authSettings = oauthSettings.Value;
+            ExceptionReporting.dbSettings = dbsettings.Value;
+            ExceptionReporting.emailConfiguration = configuration.Get("ReportFiles");
 
 
         }
