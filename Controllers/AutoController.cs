@@ -186,6 +186,8 @@ namespace bogart_wireless.Controllers
 
         public IActionResult testFunc()
         {
+
+            /*
             DateTime startTime = DateTime.Now;
             TimeSpan elapsedTime = new TimeSpan();
 
@@ -211,6 +213,13 @@ namespace bogart_wireless.Controllers
             elapsedTime = DateTime.Now - startTime;
             ViewBag.Message = "Waited " + delayCount + " ticks; " + elapsedTime.Minutes + " minutes " + elapsedTime.Seconds + " seconds";
             return View("Done");
+            */
+            OAuth2 oauth = new OAuth2("report_files_dev@bogart-wireless.net");
+            ExceptionReporting er = new ExceptionReporting();
+            String message = er.generateExceptionReport();
+            oauth.QuickSend("Exception Report", message, "dave.bogart@wireless-zone.com", "Dave", "report_files@bogart-wireless.net");
+            return View("Done");
+
 
         }
     }
