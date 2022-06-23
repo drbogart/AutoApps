@@ -74,10 +74,11 @@ namespace bogart_wireless.Controllers
 
         public IActionResult FileLoader()
         {
+            bool reloadDashboard  = false;
             SalesData salesData = new SalesData();
-            int numEmails = salesData.executeFileLoader();
+            int numEmails = salesData.executeFileLoader(reloadDashboard);
             ViewBag.Message = "Processed " + numEmails + " emails";
-            if (numEmails > 0)
+            if (reloadDashboard)
             {
                 ProductDetailsData pd = new ProductDetailsData();
                 pd.newLoadDailyDashboard();
@@ -216,8 +217,12 @@ namespace bogart_wireless.Controllers
             */
             OAuth2 oauth = new OAuth2("report_files_dev@bogart-wireless.net");
             ExceptionReporting er = new ExceptionReporting();
+
+            
             String message = er.generateExceptionReport();
             oauth.QuickSend("Exception Report", message, "dave.bogart@wireless-zone.com", "Dave", "report_files@bogart-wireless.net");
+            
+            
             return View("Done");
 
 
