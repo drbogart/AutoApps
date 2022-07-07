@@ -76,7 +76,7 @@ namespace bogart_wireless.Controllers
         {
             bool reloadDashboard  = false;
             SalesData salesData = new SalesData();
-            int numEmails = salesData.executeFileLoader(reloadDashboard);
+            int numEmails = salesData.executeFileLoader(out reloadDashboard);
             ViewBag.Message = "Processed " + numEmails + " emails";
             if (reloadDashboard)
             {
