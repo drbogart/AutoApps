@@ -56,6 +56,8 @@ namespace bogart_wireless.Controllers
             OAuth2.authSettings = oauthSettings.Value;
             ExceptionReporting.dbSettings = dbsettings.Value;
             ExceptionReporting.emailConfiguration = configuration.Get("ReportFiles");
+            DatascapeExceptionReporting.dbSettings = dbsettings.Value;
+            DatascapeExceptionReporting.emailConfiguration = configuration.Get("ReportFiles");
 
 
         }
