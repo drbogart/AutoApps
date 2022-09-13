@@ -42,7 +42,7 @@ namespace AutoApps
             services.Configure<DatabaseConnectionSettings>(options => Configuration.GetSection("DatabaseConnectionSettings").Bind(options));
             services.Configure<GeneralSettings>(options => Configuration.GetSection("General").Bind(options));
             services.Configure<OAuth2Configuration>(options => Configuration.GetSection("OAuth2Configuration:Credentials").Bind(options));
-
+            services.AddApplicationInsightsTelemetry();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

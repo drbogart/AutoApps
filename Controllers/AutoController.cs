@@ -25,6 +25,8 @@ using MimeKit;
 using MimeKit.Text;
 using System.Text;
 using Thread = System.Threading.Thread;
+using Google.Apis.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace bogart_wireless.Controllers
 {
@@ -32,8 +34,10 @@ namespace bogart_wireless.Controllers
     public class AutoController : Controller
     {
         readonly IEmailConfiguration _configuration; // for email
+        private readonly ILogger<AutoController> _logger; // Adding the ILogger service  
 
-        public AutoController(IOptionsSnapshot<EmailConfiguration> configuration, IOptions<DatabaseConnectionSettings> dbsettings, IOptions<GeneralSettings> generalSettings, IOptions<OAuth2Configuration> oauthSettings)
+
+        public AutoController(IOptionsSnapshot<EmailConfiguration> configuration, IOptions<DatabaseConnectionSettings> dbsettings, IOptions<GeneralSettings> generalSettings, IOptions<OAuth2Configuration> oauthSettings, ILogger<AutoController> logger)
         {
             _configuration = configuration.Get("ReportFiles");
             Datascape.emailConfiguration = configuration.Get("Datascape");
@@ -62,7 +66,7 @@ namespace bogart_wireless.Controllers
             BillingReconciliation.emailConfiguration = configuration.Get("ReportFiles");
             SalesOrderReconciliation.dbSettings = dbsettings.Value;
             SalesOrderReconciliation.emailConfiguration = configuration.Get("ReportFiles");
-
+            _logger = logger;
 
         }
 
@@ -194,41 +198,7 @@ namespace bogart_wireless.Controllers
         public IActionResult testFunc()
         {
 
-            /*
-            DateTime startTime = DateTime.Now;
-            TimeSpan elapsedTime = new TimeSpan();
-
-            try
-            {
-                Stream xstream = new FileStream(OAuth2.authSettings.credentialFile, FileMode.Open, FileAccess.Read, FileShare.Read);
-            }
-            catch (Exception e)
-            {
-                ViewBag.Message = e.Message;
-                return View("Done");
-            }
-            
-            int delayCount = 0;
-            
-            OAuth2 oauth = new OAuth2("clients_dev@bogart-wireless.net");
-            while (!oauth.Initiated)
-            {
-                Thread.Sleep(1000);
-                delayCount++;
-            }
-            
-            elapsedTime = DateTime.Now - startTime;
-            ViewBag.Message = "Waited " + delayCount + " ticks; " + elapsedTime.Minutes + " minutes " + elapsedTime.Seconds + " seconds";
-            return View("Done");
-            */
-            OAuth2 oauth = new OAuth2("report_files_dev@bogart-wireless.net");
-            ExceptionReporting er = new ExceptionReporting();
-
-            
-            String message = er.generateExceptionReport();
-            oauth.QuickSend("Exception Report", message, "dave.bogart@wireless-zone.com", "Dave", "report_files@bogart-wireless.net");
-            
-            
+            _logger.LogCritical("Critical Error Log Test!!!!!");
             return View("Done");
 
 

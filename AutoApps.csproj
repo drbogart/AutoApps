@@ -4,6 +4,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>annotations</Nullable>
     <AnalysisLevel>none</AnalysisLevel>
+    <ApplicationInsightsResourceId>/subscriptions/362dfa51-a700-4961-9efa-5c5da4baff03/resourceGroups/bogart-wireless/providers/microsoft.insights/components/AutoApp-staging</ApplicationInsightsResourceId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -28,6 +29,7 @@
     <PackageReference Include="Google.Apis.Gmail.v1" Version="1.57.0.2650" />
     <PackageReference Include="Google.Apis.Oauth2.v2" Version="1.57.0.1869" />
     <PackageReference Include="MailKit" Version="3.2.0" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="6.0.5" />
     <PackageReference Include="Microsoft.Azure.WebJobs" Version="3.0.33" />
     <PackageReference Include="Microsoft.Azure.WebJobs.Core" Version="3.0.33" />
