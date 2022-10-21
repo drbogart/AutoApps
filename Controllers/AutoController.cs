@@ -62,8 +62,8 @@ namespace bogart_wireless.Controllers
             ExceptionReporting.emailConfiguration = configuration.Get("ReportFiles");
             DatascapeExceptionReporting.dbSettings = dbsettings.Value;
             DatascapeExceptionReporting.emailConfiguration = configuration.Get("ReportFiles");
-            BillingReconciliation.dbSettings = dbsettings.Value;
-            BillingReconciliation.emailConfiguration = configuration.Get("ReportFiles");
+            DeviceReconciliation.dbSettings = dbsettings.Value;
+            DeviceReconciliation.emailConfiguration = configuration.Get("ReportFiles");
             SalesOrderReconciliation.dbSettings = dbsettings.Value;
             SalesOrderReconciliation.emailConfiguration = configuration.Get("ReportFiles");
             ReceivingReconciliation.dbSettings = dbsettings.Value;
