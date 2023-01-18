@@ -109,7 +109,7 @@ namespace bogart_wireless.Controllers
         {
             Payroll payroll = new Payroll();
             payroll.calculateWeeklyCommission(false);
-            ViewBag.Message = "Processed commissions";
+            ViewBag.Message = "Processed payroll";
             return View("Done");
 
         }
