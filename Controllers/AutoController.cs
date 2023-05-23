@@ -68,8 +68,7 @@ namespace bogart_wireless.Controllers
             SalesOrderReconciliation.emailConfiguration = configuration.Get("ReportFiles");
             ReceivingReconciliation.dbSettings = dbsettings.Value;
             ReceivingReconciliation.emailConfiguration = configuration.Get("ReportFiles");
-            WarehouseStatementReconciliation.dbSettings = dbsettings.Value;
-            WarehouseStatementReconciliation.emailConfiguration = configuration.Get("ReportFiles");
+
             _logger = logger;
 
         }
