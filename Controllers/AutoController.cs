@@ -114,6 +114,16 @@ namespace bogart_wireless.Controllers
             return View("Done");
 
         }
+
+        public IActionResult PayrollTest(SalesData salesData)
+        {
+            Payroll payroll = new Payroll();
+            payroll.calculateWeeklyCommission(false,true);
+            ViewBag.Message = "Tested payroll";
+            return View("Done");
+
+        }
+
         public IActionResult ProcessDatascape(SalesData salesData)
         {
             Datascape datascape = new Datascape();
