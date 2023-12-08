@@ -154,6 +154,7 @@ namespace bogart_wireless.Controllers
 
         }
 
+        /*
         // for development only.  Reconcile Datascape 
         public IActionResult DailyDashboard()
         {
@@ -163,7 +164,7 @@ namespace bogart_wireless.Controllers
             return View("Done");
 
         }
-
+        */
         public IActionResult newDailyDashboard()
         {
             ProductDetailsData pd = new ProductDetailsData();
