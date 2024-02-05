@@ -119,7 +119,7 @@ namespace bogart_wireless.Controllers
         public IActionResult PayrollTest(SalesData salesData)
         {
             Payroll payroll = new Payroll();
-            payroll.calculateWeeklyCommission(false,true);
+            payroll.calculateWeeklyCommission(true,true);
             ViewBag.Message = "Tested payroll";
             return View("Done");
 
