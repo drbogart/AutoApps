@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <Nullable>annotations</Nullable>
     <AnalysisLevel>none</AnalysisLevel>
     <ApplicationInsightsResourceId>/subscriptions/362dfa51-a700-4961-9efa-5c5da4baff03/resourceGroups/bogart-wireless/providers/microsoft.insights/components/AutoApp-staging</ApplicationInsightsResourceId>
@@ -12,13 +12,28 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Aging Audit 20240102.xlsx" />
     <None Remove="Copy of Sales by Product Report From 05-Apr-2022 To 05-Apr-2022 113853.xls" />
     <None Remove="Copy of Sales by Product Report From 05-Apr-2022 To 05-Apr-2022 161652.xls" />
+    <None Remove="Copy of Sales by Product Report From 05-Feb-2024 To 07-Feb-2024 103207.xls" />
     <None Remove="Copy of Sales by Product Report From 06-Apr-2022 To 06-Apr-2022 101555.xls" />
     <None Remove="Copy of Sales by Product Report From 06-Apr-2022 To 06-Apr-2022 161842.xls" />
     <None Remove="Copy of Sales by Product Report From 07-Apr-2022 To 07-Apr-2022 162003.xls" />
     <None Remove="Copy of Sales by Product Report From 08-Apr-2022 To 08-Apr-2022 134943.xls" />
     <None Remove="Copy of Sales by Product Report From 09-Apr-2022 To 09-Apr-2022 101733.xls" />
+    <None Remove="Invoices_[10_1_2022]-[10_31_2022] %282%29.xls" />
+    <None Remove="May 2023WarehouseStatement %282%29.xls" />
+    <None Remove="Oct 2023 WarehouseStatement.pdf" />
+    <None Remove="Sales by Product Report From 05-Jun-2022 To 05-Jun-2022 081023.xlsx" />
+    <None Remove="Sept2023 Receiving Invoices History Report - Invoice For Wireless Zone East Aurora WZ298,Wireless Zone Lockport WZ192,Wireless Zone Springville  130020.xls" />
+    <None Remove="Shit.XLS" />
+    <None Remove="SPR May2023 WarehouseStatement.xls" />
+    <None Remove="Visitors - Lockport %2814%29.xlsx" />
+    <None Remove="Visitors - Springville %2828%29.xlsx" />
+    <None Remove="Visitors - Springville %287%29.xlsx" />
+    <None Remove="Visitors - Springville %2879%29.xlsx" />
+    <None Remove="WarehouseStatement %283%29.xls" />
+    <None Remove="WarehouseStatement.xls" />
   </ItemGroup>
 
 
