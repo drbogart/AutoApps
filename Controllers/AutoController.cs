@@ -72,6 +72,8 @@ namespace bogart_wireless.Controllers
             VaricentExceptionReporting.emailConfiguration = configuration.Get("ReportFiles");
             AgingReporting.dbSettings = dbsettings.Value;
             AgingReporting.emailConfiguration = configuration.Get("ReportFiles");
+            PayrollKPILoad.dbSettings = dbsettings.Value;
+            FieldMappings.dbSettings = dbsettings.Value;
             _logger = logger;
 
         }
