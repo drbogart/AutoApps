@@ -74,6 +74,8 @@ namespace bogart_wireless.Controllers
             AgingReporting.emailConfiguration = configuration.Get("ReportFiles");
             PayrollKPILoad.dbSettings = dbsettings.Value;
             FieldMappings.dbSettings = dbsettings.Value;
+            ReportedPayroll.dbSettings = dbsettings.Value;
+            ReportedPayroll.emailConfiguration = configuration.Get("ReportFiles");
             _logger = logger;
 
         }
