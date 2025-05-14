@@ -76,6 +76,8 @@ namespace bogart_wireless.Controllers
             FieldMappings.dbSettings = dbsettings.Value;
             ReportedPayroll.dbSettings = dbsettings.Value;
             ReportedPayroll.emailConfiguration = configuration.Get("ReportFiles");
+            DeviceSPIFFS.dbSettings = dbsettings.Value;
+            DeviceSPIFFS.emailConfiguration = configuration.Get("ReportFiles");
             _logger = logger;
 
         }
@@ -218,8 +220,10 @@ namespace bogart_wireless.Controllers
 
         public IActionResult testFunc()
         {
-
-            _logger.LogCritical("Critical Error Log Test!!!!!");
+            DateTime startDate = DateTime.Parse("5/4/2025");
+            DateTime endDate = DateTime.Parse("5/10/2025");
+            Payroll deviceSPIFFS = new Payroll();
+            deviceSPIFFS.calculateDeviceSPIFFS(startDate, endDate);
             return View("Done");
 
 
