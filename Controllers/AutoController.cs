@@ -220,8 +220,8 @@ namespace bogart_wireless.Controllers
 
         public IActionResult testFunc()
         {
-            DateTime startDate = DateTime.Parse("5/9/2025");
-            DateTime endDate = DateTime.Parse("5/22/2025");
+            DateTime startDate = DateTime.Parse("5/15/2025");
+            DateTime endDate = DateTime.Parse("5/24/2025");
             Payroll deviceSPIFFS = new Payroll();
             deviceSPIFFS.calculateDeviceSPIFFS(startDate, endDate);
             return View("Done");
