@@ -123,6 +123,15 @@ namespace bogart_wireless.Controllers
             return View("Done");
 
         }
+        // caclulate device SPIFFS onl7
+        public IActionResult DeviceSPIFFSOnly(SalesData salesData)
+        {
+            Payroll payroll = new Payroll();
+            payroll.calculateDeviceSPIFFsOnly();
+            ViewBag.Message = "Processed payroll";
+            return View("Done");
+
+        }
 
         public IActionResult PayrollTest(SalesData salesData)
         {
